@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../models/item_model.dart';
 import '../services/item_service.dart';
+import '../widgets/custom_input.dart';
 
 class DetailScreen extends StatefulWidget {
   const DetailScreen({super.key, required this.item});
@@ -187,12 +188,11 @@ class _DetailScreenState extends State<DetailScreen> {
               children: [
                 _imagePreview(),
                 SizedBox(height: 12.h),
-                TextFormField(
+                URLInput(
+                  label: 'Photo URL',
+                  hint: 'Enter image URL (optional)',
                   controller: _photoCtrl,
-                  decoration: const InputDecoration(
-                    labelText: 'Photo URL',
-                    border: OutlineInputBorder(),
-                  ),
+                  isRequired: false,
                   onChanged: (_) => setState(() {}), // refresh preview
                 ),
                 SizedBox(height: 12.h),
@@ -223,34 +223,29 @@ class _DetailScreenState extends State<DetailScreen> {
                 Row(
                   children: [
                     Expanded(
-                      child: TextFormField(
+                      child: NumberInput(
+                        label: 'Qty Total',
+                        hint: 'Enter total quantity',
                         controller: _qtyTotalCtrl,
-                        keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(
-                          labelText: 'Qty Total',
-                          border: OutlineInputBorder(),
-                        ),
-                        validator: (v) {
-                          final n = int.tryParse((v ?? '').trim());
-                          if (n == null || n < 0) return 'Invalid';
-                          return null;
-                        },
+                        min: 0,
+                        max: 999999,
                       ),
                     ),
                     SizedBox(width: 10.w),
                     Expanded(
-                      child: TextFormField(
+                      child: NumberInput(
+                        label: 'Qty Available',
+                        hint: 'Enter available quantity',
                         controller: _qtyAvailCtrl,
-                        keyboardType: TextInputType.number,
-                        decoration: const InputDecoration(
-                          labelText: 'Qty Available',
-                          border: OutlineInputBorder(),
-                        ),
+                        min: 0,
                         validator: (v) {
-                          final a = int.tryParse((v ?? '').trim());
+                          if (v == null || v.trim().isEmpty) {
+                            return 'Available quantity is required';
+                          }
+                          final a = int.tryParse(v.trim());
                           final t = int.tryParse(_qtyTotalCtrl.text.trim());
-                          if (a == null || a < 0) return 'Invalid';
-                          if (t != null && a > t) return '> total';
+                          if (a == null || a < 0) return 'Must be a valid number';
+                          if (t != null && a > t) return 'Cannot exceed total quantity';
                           return null;
                         },
                       ),

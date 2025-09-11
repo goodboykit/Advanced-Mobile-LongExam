@@ -140,36 +140,29 @@ class _ItemScreenState extends State<ItemScreen> {
                       Row(
                         children: [
                           Expanded(
-                            child: TextFormField(
+                            child: NumberInput(
+                              label: 'Qty Total',
+                              hint: 'Enter total quantity',
                               controller: qtyTotalCtrl,
-                              keyboardType: TextInputType.number,
-                              decoration: const InputDecoration(
-                                labelText: 'Qty Total',
-                                border: OutlineInputBorder(),
-                              ),
-                              validator: (v) {
-                                final n = int.tryParse((v ?? '').trim());
-                                if (n == null || n < 0) return 'Invalid';
-                                return null;
-                              },
+                              min: 0,
+                              max: 999999,
                             ),
                           ),
                           SizedBox(width: 10.w),
                           Expanded(
-                            child: TextFormField(
+                            child: NumberInput(
+                              label: 'Qty Available',
+                              hint: 'Enter available quantity',
                               controller: qtyAvailCtrl,
-                              keyboardType: TextInputType.number,
-                              decoration: const InputDecoration(
-                                labelText: 'Qty Available',
-                                border: OutlineInputBorder(),
-                              ),
+                              min: 0,
                               validator: (v) {
-                                final a = int.tryParse((v ?? '').trim());
-                                final t = int.tryParse(
-                                  qtyTotalCtrl.text.trim(),
-                                );
-                                if (a == null || a < 0) return 'Invalid';
-                                if (t != null && a > t) return '> total';
+                                if (v == null || v.trim().isEmpty) {
+                                  return 'Available quantity is required';
+                                }
+                                final a = int.tryParse(v.trim());
+                                final t = int.tryParse(qtyTotalCtrl.text.trim());
+                                if (a == null || a < 0) return 'Must be a valid number';
+                                if (t != null && a > t) return 'Cannot exceed total quantity';
                                 return null;
                               },
                             ),
