@@ -206,10 +206,12 @@ class _ItemScreenState extends State<ItemScreen> {
 
   Widget _leadingThumb(Item item) {
     final url = item.photoUrl.trim();
+    const double imageSize = 56.0; // Fixed size instead of responsive
+    
     if (url.isEmpty) {
       return Container(
-        width: 72.sp,
-        height: 72.sp,
+        width: imageSize,
+        height: imageSize,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
           border: Border.all(color: Colors.grey.shade300),
@@ -221,12 +223,12 @@ class _ItemScreenState extends State<ItemScreen> {
       borderRadius: BorderRadius.circular(8),
       child: Image(
         image: NetworkImage(url),
-        width: 72.sp,
-        height: 72.sp,
+        width: imageSize,
+        height: imageSize,
         fit: BoxFit.cover,
         errorBuilder: (_, __, ___) => Container(
-          width: 72.sp,
-          height: 72.sp,
+          width: imageSize,
+          height: imageSize,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
             border: Border.all(color: Colors.grey.shade300),
@@ -324,14 +326,16 @@ class _ItemScreenState extends State<ItemScreen> {
                       fontSize: 17,
                       fontWeight: FontWeight.bold,
                       maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    subtitle: CustomText(text: subtitle, maxLines: 2),
-                    trailing: SizedBox(
-                      height: double.infinity,
-                      child: GestureDetector(
-                        onTap: () => debugPrint('More ${item.uid}'),
-                        child: const Icon(Icons.keyboard_arrow_right),
-                      ),
+                    subtitle: CustomText(
+                      text: subtitle, 
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    trailing: GestureDetector(
+                      onTap: () => debugPrint('More ${item.uid}'),
+                      child: const Icon(Icons.keyboard_arrow_right),
                     ),
                   ),
                 ),

@@ -13,16 +13,97 @@ const getUsers = async (req, res) => {
 
 const createUser = async (req, res) => {
   try {
-    if (!req.body.password) {
-      return res.status(400).json({ message: 'Password is required' });
+    const { 
+      firstName, 
+      lastName, 
+      age, 
+      gender, 
+      contactNumber, 
+      email, 
+      username, 
+      password, 
+      address 
+    } = req.body;
+
+    // Input validation
+    if (!firstName || !lastName || !age || !gender || !contactNumber || !email || !username || !password || !address) {
+      return res.status(400).json({ message: 'All fields are required' });
     }
 
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    // Email validation
+    const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ message: 'Invalid email format' });
+    }
+
+    // Age validation
+    if (age < 18 || age > 100) {
+      return res.status(400).json({ message: 'Age must be between 18 and 100' });
+    }
+
+    // Password strength validation
+    if (password.length < 8) {
+      return res.status(400).json({ message: 'Password must be at least 8 characters long' });
+    }
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ 
+      $or: [{ email }, { username }] 
+    });
+    if (existingUser) {
+      if (existingUser.email === email) {
+        return res.status(409).json({ message: 'Email already registered' });
+      }
+      if (existingUser.username === username) {
+        return res.status(409).json({ message: 'Username already taken' });
+      }
+    }
+
+    // Sanitize and prepare data
+    const userData = {
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
+      age: parseInt(age),
+      gender: gender.trim(),
+      contactNumber: contactNumber.trim(),
+      email: email.trim().toLowerCase(),
+      username: username.trim().toLowerCase(),
+      address: address.trim(),
+      isActive: true,
+      type: 'user'
+    };
+
+    const hashedPassword = await bcrypt.hash(password, 12);
     
-    const user = await User.create({ ...req.body, password: hashedPassword });
+    const user = await User.create({ 
+      ...userData, 
+      password: hashedPassword 
+    });
+
+    // Generate token for immediate login after registration
+    const token = jwt.sign(
+      { id: user._id, email: user.email, type: user.type },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
     
-    res.status(201).json(user);
+    // Return user data without password
+    const userResponse = {
+      _id: user._id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      username: user.username,
+      type: user.type,
+      token
+    };
+    
+    res.status(201).json(userResponse);
   } catch (error) {
+    if (error.code === 11000) {
+      const field = Object.keys(error.keyValue)[0];
+      return res.status(409).json({ message: `${field} already exists` });
+    }
     res.status(400).json({ message: error.message });
   }
 };

@@ -7,15 +7,31 @@ class UserService {
   Map<String, dynamic> data = {};
 
   Future<Map<String, dynamic>> loginUser(String email, String password) async {
-    Response response = await post(Uri.parse('$host/api/users/login'),
-        body: {"email": email, "password": password});
+    try {
+      Response response = await post(
+        Uri.parse('$host/api/users/login'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          "email": email, 
+          "password": password
+        }),
+      );
 
-    if (response.statusCode == 200) {
-      data = jsonDecode(response.body);
-      return data;
-      // print(data);
-    } else {
-      throw Exception('Failed to load data');
+      if (response.statusCode == 200) {
+        data = jsonDecode(response.body);
+        return data;
+      } else {
+        // Parse error message from server
+        final errorData = jsonDecode(response.body);
+        throw Exception(errorData['message'] ?? 'Login failed');
+      }
+    } catch (e) {
+      if (e is Exception) {
+        rethrow;
+      }
+      throw Exception('Network error: Unable to connect to server');
     }
   }
 

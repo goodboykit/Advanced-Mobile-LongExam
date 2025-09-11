@@ -147,10 +147,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
           child: SafeArea(
             child: Container(
-              height: 70,
+              height: 75, // Increased from 70 to accommodate content
               padding: const EdgeInsets.symmetric(
                 horizontal: UIConstants.spacingL,
-                vertical: UIConstants.spacingS,
+                vertical: UIConstants.spacingXS, // Reduced from spacingS
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -165,8 +165,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 200),
                         padding: const EdgeInsets.symmetric(
-                          horizontal: UIConstants.spacingS,
-                          vertical: UIConstants.spacingS,
+                          horizontal: UIConstants.spacingXS, // Reduced from spacingS
+                          vertical: UIConstants.spacingXS,   // Reduced from spacingS
                         ),
                         decoration: BoxDecoration(
                           color: isSelected 
@@ -176,29 +176,38 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         ),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            AnimatedContainer(
-                              duration: const Duration(milliseconds: 200),
-                              child: Icon(
-                                isSelected ? item['activeIcon'] : item['icon'],
-                                color: isSelected 
-                                    ? AppColors.primary
-                                    : theme.colorScheme.onSurface.withOpacity(0.6),
-                                size: UIConstants.iconM,
+                            Flexible(
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 200),
+                                child: Icon(
+                                  isSelected ? item['activeIcon'] : item['icon'],
+                                  color: isSelected 
+                                      ? AppColors.primary
+                                      : theme.colorScheme.onSurface.withOpacity(0.6),
+                                  size: UIConstants.iconM,
+                                ),
                               ),
                             ),
-                            const SizedBox(height: UIConstants.spacingXS),
-                            AnimatedDefaultTextStyle(
-                              duration: const Duration(milliseconds: 200),
-                              style: AppTextStyles.caption.copyWith(
-                                color: isSelected 
-                                    ? AppColors.primary
-                                    : theme.colorScheme.onSurface.withOpacity(0.6),
-                                fontWeight: isSelected 
-                                    ? FontWeight.w600
-                                    : FontWeight.w400,
+                            Flexible(
+                              child: AnimatedDefaultTextStyle(
+                                duration: const Duration(milliseconds: 200),
+                                style: AppTextStyles.caption.copyWith(
+                                  fontSize: 9, // Even smaller font
+                                  color: isSelected 
+                                      ? AppColors.primary
+                                      : theme.colorScheme.onSurface.withOpacity(0.6),
+                                  fontWeight: isSelected 
+                                      ? FontWeight.w600
+                                      : FontWeight.w400,
+                                ),
+                                child: Text(
+                                  item['label'],
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
-                              child: Text(item['label']),
                             ),
                           ],
                         ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../services/user_service.dart';
 import '../widgets/custom_input.dart';
+import '../constants.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -93,206 +94,425 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+    
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Sign Up'),
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
-          child: Form(
-            key: _formKey,
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: AppGradients.primaryGradient,
+        ),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.symmetric(
+              horizontal: screenSize.width * 0.05,
+              vertical: screenSize.height * 0.02,
+            ),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Text(
-                  'Create Account',
-                  style: TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 32),
-                
-                // First Name
-                TextFormField(
-                  controller: _firstNameController,
-                  decoration: InputDecoration(
-                    labelText: 'First Name',
-                    prefixIcon: const Icon(Icons.person),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Please enter your first name';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                
-                // Last Name
-                TextFormField(
-                  controller: _lastNameController,
-                  decoration: InputDecoration(
-                    labelText: 'Last Name',
-                    prefixIcon: const Icon(Icons.person_outline),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Please enter your last name';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                
-                // Age
-                NumberInput(
-                  label: 'Age',
-                  hint: 'Enter your age',
-                  controller: _ageController,
-                  min: 18,
-                  max: 100,
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Please enter your age';
-                    }
-                    final age = int.tryParse(value.trim());
-                    if (age == null || age < 18 || age > 100) {
-                      return 'Age must be between 18 and 100';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                
-                // Gender
-                DropdownInput<String>(
-                  label: 'Gender',
-                  hint: 'Select your gender',
-                  value: _selectedGender,
-                  items: const [
-                    DropdownMenuItem(value: 'Male', child: Text('Male')),
-                    DropdownMenuItem(value: 'Female', child: Text('Female')),
-                    DropdownMenuItem(value: 'Other', child: Text('Other')),
-                    DropdownMenuItem(value: 'Prefer not to say', child: Text('Prefer not to say')),
-                  ],
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedGender = value;
-                    });
-                  },
-                  validator: (value) {
-                    if (value == null) {
-                      return 'Please select your gender';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                
-                // Contact Number
-                PhoneInput(
-                  label: 'Contact Number',
-                  hint: 'Enter your phone number',
-                  controller: _contactController,
-                ),
-                const SizedBox(height: 16),
-                
-                // Email
-                EmailInput(
-                  label: 'Email',
-                  hint: 'Enter your email address',
-                  controller: _emailController,
-                ),
-                const SizedBox(height: 16),
-                
-                // Username
-                TextFormField(
-                  controller: _usernameController,
-                  decoration: InputDecoration(
-                    labelText: 'Username',
-                    prefixIcon: const Icon(Icons.account_circle),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Please enter a username';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                
-                // Password
-                EnhancedPasswordInput(
-                  label: 'Password',
-                  hint: 'Enter a strong password',
-                  controller: _passwordController,
-                  showStrengthIndicator: true,
-                ),
-                const SizedBox(height: 16),
-                
-                // Address
-                TextFormField(
-                  controller: _addressController,
-                  maxLines: 3,
-                  decoration: InputDecoration(
-                    labelText: 'Address',
-                    prefixIcon: const Icon(Icons.location_on),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    alignLabelWithHint: true,
-                  ),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Please enter your address';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 24),
-                
-                // Sign Up Button
-                ElevatedButton(
-                  onPressed: _isLoading ? null : _handleSignUp,
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: _isLoading
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
+                // Header Section
+                Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.symmetric(vertical: screenSize.height * 0.03),
+                  child: Column(
+                    children: [
+                      // Back Button
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: AppColors.white.withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(UIConstants.radiusL),
                           ),
-                        )
-                      : const Text(
-                          'Sign Up',
-                          style: TextStyle(fontSize: 16),
+                          child: IconButton(
+                            icon: const Icon(
+                              Icons.arrow_back_ios_new,
+                              color: AppColors.white,
+                            ),
+                            onPressed: () => Navigator.pop(context),
+                          ),
                         ),
+                      ),
+                      
+                      SizedBox(height: screenSize.height * 0.02),
+                      
+                      // Title Section
+                      Text(
+                        'Create Account',
+                        style: TextStyle(
+                          fontSize: screenSize.width * 0.08,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.white,
+                          letterSpacing: 1.5,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      
+                      SizedBox(height: screenSize.height * 0.01),
+                      
+                      Text(
+                        'Join us and start your journey',
+                        style: TextStyle(
+                          fontSize: screenSize.width * 0.04,
+                          color: AppColors.white.withOpacity(0.8),
+                          letterSpacing: 0.5,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 16),
                 
-                // Login Link
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: const Text('Already have an account? Login'),
+                // Form Card
+                Container(
+                  width: double.infinity,
+                  margin: EdgeInsets.symmetric(vertical: screenSize.height * 0.02),
+                  decoration: BoxDecoration(
+                    color: AppColors.white,
+                    borderRadius: BorderRadius.circular(UIConstants.radiusXL),
+                    boxShadow: const [AppShadows.medium],
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.all(screenSize.width * 0.06),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                
+                          // Personal Information Section
+                          Container(
+                            padding: EdgeInsets.symmetric(vertical: screenSize.height * 0.01),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Personal Information',
+                                  style: TextStyle(
+                                    fontSize: screenSize.width * 0.045,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.textPrimary,
+                                  ),
+                                ),
+                                SizedBox(height: screenSize.height * 0.02),
+                                
+                                // First Name
+                                Container(
+                                  margin: EdgeInsets.only(bottom: screenSize.height * 0.015),
+                                  child: TextFormField(
+                                    controller: _firstNameController,
+                                    style: TextStyle(fontSize: screenSize.width * 0.04),
+                                    decoration: InputDecoration(
+                                      labelText: 'First Name',
+                                      prefixIcon: Icon(
+                                        Icons.person_outline,
+                                        color: AppColors.primary,
+                                        size: screenSize.width * 0.05,
+                                      ),
+                                      filled: true,
+                                      fillColor: AppColors.grey50,
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(UIConstants.radiusL),
+                                        borderSide: BorderSide.none,
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(UIConstants.radiusL),
+                                        borderSide: BorderSide(color: AppColors.primary, width: 2),
+                                      ),
+                                    ),
+                                    validator: (value) {
+                                      if (value == null || value.trim().isEmpty) {
+                                        return 'Please enter your first name';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                ),
+                                
+                                // Last Name
+                                Container(
+                                  margin: EdgeInsets.only(bottom: screenSize.height * 0.015),
+                                  child: TextFormField(
+                                    controller: _lastNameController,
+                                    style: TextStyle(fontSize: screenSize.width * 0.04),
+                                    decoration: InputDecoration(
+                                      labelText: 'Last Name',
+                                      prefixIcon: Icon(
+                                        Icons.person_outline,
+                                        color: AppColors.primary,
+                                        size: screenSize.width * 0.05,
+                                      ),
+                                      filled: true,
+                                      fillColor: AppColors.grey50,
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(UIConstants.radiusL),
+                                        borderSide: BorderSide.none,
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(UIConstants.radiusL),
+                                        borderSide: BorderSide(color: AppColors.primary, width: 2),
+                                      ),
+                                    ),
+                                    validator: (value) {
+                                      if (value == null || value.trim().isEmpty) {
+                                        return 'Please enter your last name';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                ),
+                
+                                // Age and Gender Row
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Container(
+                                        margin: EdgeInsets.only(bottom: screenSize.height * 0.015, right: 8),
+                                        child: NumberInput(
+                                          label: 'Age',
+                                          hint: 'Enter your age',
+                                          controller: _ageController,
+                                          min: 18,
+                                          max: 100,
+                                        ),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: Container(
+                                        margin: EdgeInsets.only(bottom: screenSize.height * 0.015, left: 8),
+                                        child: DropdownInput<String>(
+                                          label: 'Gender',
+                                          hint: 'Select your gender',
+                                          value: _selectedGender,
+                                          items: const [
+                                            DropdownMenuItem(value: 'Male', child: Text('Male')),
+                                            DropdownMenuItem(value: 'Female', child: Text('Female')),
+                                            DropdownMenuItem(value: 'Other', child: Text('Other')),
+                                            DropdownMenuItem(value: 'Prefer not to say', child: Text('Prefer not to say')),
+                                          ],
+                                          onChanged: (value) {
+                                            setState(() {
+                                              _selectedGender = value;
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                          
+                          // Contact Information Section
+                          Container(
+                            padding: EdgeInsets.symmetric(vertical: screenSize.height * 0.02),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Contact Information',
+                                  style: TextStyle(
+                                    fontSize: screenSize.width * 0.045,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.textPrimary,
+                                  ),
+                                ),
+                                SizedBox(height: screenSize.height * 0.02),
+                                
+                                // Phone Number
+                                Container(
+                                  margin: EdgeInsets.only(bottom: screenSize.height * 0.015),
+                                  child: PhoneInput(
+                                    label: 'Contact Number',
+                                    hint: 'Enter your phone number',
+                                    controller: _contactController,
+                                  ),
+                                ),
+                                
+                                // Email
+                                Container(
+                                  margin: EdgeInsets.only(bottom: screenSize.height * 0.015),
+                                  child: EmailInput(
+                                    label: 'Email',
+                                    hint: 'Enter your email address',
+                                    controller: _emailController,
+                                  ),
+                                ),
+                                
+                                // Address
+                                Container(
+                                  margin: EdgeInsets.only(bottom: screenSize.height * 0.015),
+                                  child: TextFormField(
+                                    controller: _addressController,
+                                    maxLines: 3,
+                                    style: TextStyle(fontSize: screenSize.width * 0.04),
+                                    decoration: InputDecoration(
+                                      labelText: 'Address',
+                                      prefixIcon: Icon(
+                                        Icons.location_on_outlined,
+                                        color: AppColors.primary,
+                                        size: screenSize.width * 0.05,
+                                      ),
+                                      filled: true,
+                                      fillColor: AppColors.grey50,
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(UIConstants.radiusL),
+                                        borderSide: BorderSide.none,
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(UIConstants.radiusL),
+                                        borderSide: const BorderSide(color: AppColors.primary, width: 2),
+                                      ),
+                                      alignLabelWithHint: true,
+                                    ),
+                                    validator: (value) {
+                                      if (value == null || value.trim().isEmpty) {
+                                        return 'Please enter your address';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          
+                          // Account Information Section
+                          Container(
+                            padding: EdgeInsets.symmetric(vertical: screenSize.height * 0.02),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Account Information',
+                                  style: TextStyle(
+                                    fontSize: screenSize.width * 0.045,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.textPrimary,
+                                  ),
+                                ),
+                                SizedBox(height: screenSize.height * 0.02),
+                                
+                                // Username
+                                Container(
+                                  margin: EdgeInsets.only(bottom: screenSize.height * 0.015),
+                                  child: TextFormField(
+                                    controller: _usernameController,
+                                    style: TextStyle(fontSize: screenSize.width * 0.04),
+                                    decoration: InputDecoration(
+                                      labelText: 'Username',
+                                      prefixIcon: Icon(
+                                        Icons.account_circle_outlined,
+                                        color: AppColors.primary,
+                                        size: screenSize.width * 0.05,
+                                      ),
+                                      filled: true,
+                                      fillColor: AppColors.grey50,
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(UIConstants.radiusL),
+                                        borderSide: BorderSide.none,
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(UIConstants.radiusL),
+                                        borderSide: const BorderSide(color: AppColors.primary, width: 2),
+                                      ),
+                                    ),
+                                    validator: (value) {
+                                      if (value == null || value.trim().isEmpty) {
+                                        return 'Please enter a username';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                ),
+                                
+                                // Password
+                                Container(
+                                  margin: EdgeInsets.only(bottom: screenSize.height * 0.03),
+                                  child: EnhancedPasswordInput(
+                                    label: 'Password',
+                                    hint: 'Enter a strong password',
+                                    controller: _passwordController,
+                                    showStrengthIndicator: true,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          
+                          // Sign Up Button
+                          Container(
+                            width: double.infinity,
+                            height: screenSize.height * 0.065,
+                            margin: EdgeInsets.symmetric(vertical: screenSize.height * 0.02),
+                            decoration: BoxDecoration(
+                              gradient: AppGradients.primaryGradient,
+                              borderRadius: BorderRadius.circular(UIConstants.radiusL),
+                              boxShadow: const [AppShadows.soft],
+                            ),
+                            child: ElevatedButton(
+                              onPressed: _isLoading ? null : _handleSignUp,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.transparent,
+                                shadowColor: Colors.transparent,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(UIConstants.radiusL),
+                                ),
+                              ),
+                              child: _isLoading
+                                  ? const SizedBox(
+                                      height: 24,
+                                      width: 24,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 3,
+                                        valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
+                                      ),
+                                    )
+                                  : Text(
+                                      'Create Account',
+                                      style: TextStyle(
+                                        fontSize: screenSize.width * 0.045,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColors.white,
+                                      ),
+                                    ),
+                            ),
+                          ),
+                
+                          // Login Link
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: UIConstants.spacingS),
+                            ),
+                            child: RichText(
+                              text: TextSpan(
+                                text: "Already have an account? ",
+                                style: TextStyle(
+                                  fontSize: screenSize.width * 0.035,
+                                  color: AppColors.textSecondary,
+                                ),
+                                children: [
+                                  TextSpan(
+                                    text: 'Login',
+                                    style: TextStyle(
+                                      fontSize: screenSize.width * 0.035,
+                                      color: AppColors.primary,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),

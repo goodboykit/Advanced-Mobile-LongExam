@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../services/user_service.dart';
 import '../constants.dart';
 
@@ -27,7 +26,7 @@ class _SplashScreenState extends State<SplashScreen>
 
   void _initializeAnimations() {
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 2000),
+      duration: const Duration(milliseconds: 3000),
       vsync: this,
     );
 
@@ -84,50 +83,68 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+    
     return Scaffold(
       body: Container(
+        width: double.infinity,
+        height: double.infinity,
         decoration: const BoxDecoration(
           gradient: AppGradients.primaryGradient,
         ),
-        child: SafeArea(
-          child: AnimatedBuilder(
-            animation: _animationController,
-            builder: (context, child) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+        child: AnimatedBuilder(
+          animation: _animationController,
+          builder: (context, child) {
+            return Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: screenSize.width * 0.05, // 5% padding on sides
+                vertical: screenSize.height * 0.05,   // 5% padding top/bottom
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // Animated Logo Section
+                  // Top spacer for better vertical distribution
+                  const Spacer(flex: 1),
+                  
+                  // Animated Logo Section - Larger for web
                   FadeTransition(
                     opacity: _fadeAnimation,
                     child: ScaleTransition(
                       scale: _scaleAnimation,
                       child: Container(
-                        padding: const EdgeInsets.all(UIConstants.spacingXL),
+                        padding: EdgeInsets.all(screenSize.width * 0.05),
                         decoration: BoxDecoration(
-                          color: AppColors.white.withOpacity(0.1),
+                          color: AppColors.white.withOpacity(0.15),
                           shape: BoxShape.circle,
                           boxShadow: const [AppShadows.medium],
                         ),
                         child: Container(
-                          width: 120.w,
-                          height: 120.w,
-                          decoration: BoxDecoration(
+                          width: screenSize.width * 0.25, // Responsive logo size
+                          height: screenSize.width * 0.25,
+                          constraints: const BoxConstraints(
+                            minWidth: 120,
+                            minHeight: 120,
+                            maxWidth: 200,
+                            maxHeight: 200,
+                          ),
+                          decoration: const BoxDecoration(
                             color: AppColors.white,
                             shape: BoxShape.circle,
-                            boxShadow: const [AppShadows.soft],
+                            boxShadow: [AppShadows.soft],
                           ),
                           child: ClipRRect(
-                            borderRadius: BorderRadius.circular(60.w),
-                            child: Image(
-                              image: const NetworkImage('http://localhost:8000/images/NUCCITLogo_Black.png'),
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Icon(
-                                  Icons.school_outlined,
-                                  size: 60.w,
-                                  color: AppColors.primary,
-                                );
-                              },
+                            borderRadius: BorderRadius.circular(screenSize.width * 0.125),
+                            child: Container(
+                              decoration: const BoxDecoration(
+                                gradient: AppGradients.secondaryGradient,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Icons.school_rounded,
+                                size: screenSize.width * 0.12,
+                                color: AppColors.white,
+                              ),
                             ),
                           ),
                         ),
@@ -135,74 +152,126 @@ class _SplashScreenState extends State<SplashScreen>
                     ),
                   ),
                   
-                  SizedBox(height: UIConstants.spacingXXL),
+                  const Spacer(flex: 1),
                   
-                  // App Title with Animation
+                  // App Title with Animation - Larger text for web
                   SlideTransition(
                     position: _slideAnimation,
                     child: FadeTransition(
                       opacity: _fadeAnimation,
+                      child: Container(
+                        width: double.infinity,
+                        child: Column(
+                          children: [
+                            Text(
+                              'Advanced Mobile',
+                              style: TextStyle(
+                                fontSize: screenSize.width * 0.06,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.white,
+                                letterSpacing: 2.0,
+                                height: 1.2,
+                              ).merge(AppTextStyles.heading1),
+                              textAlign: TextAlign.center,
+                            ),
+                            
+                            SizedBox(height: screenSize.height * 0.02),
+                            
+                            Text(
+                              'Long Exam Application',
+                              style: TextStyle(
+                                fontSize: screenSize.width * 0.04,
+                                color: AppColors.white.withOpacity(0.9),
+                                letterSpacing: 1.0,
+                                height: 1.3,
+                              ).merge(AppTextStyles.bodyLarge),
+                              textAlign: TextAlign.center,
+                            ),
+                            
+                            SizedBox(height: screenSize.height * 0.02),
+                            
+                            // Additional subtitle for better design
+                            Text(
+                              'Santiago, Kit Nicholas',
+                              style: TextStyle(
+                                fontSize: screenSize.width * 0.025,
+                                color: AppColors.white.withOpacity(0.7),
+                                letterSpacing: 0.8,
+                                fontWeight: FontWeight.w300,
+                              ).merge(AppTextStyles.bodyMedium),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  
+                  const Spacer(flex: 2),
+                  
+                  // Animated Loading Indicator - Enhanced for web
+                  FadeTransition(
+                    opacity: _fadeAnimation,
+                    child: Container(
+                      width: double.infinity,
                       child: Column(
                         children: [
-                          Text(
-                            'Advanced Mobile',
-                            style: AppTextStyles.heading2.copyWith(
-                              color: AppColors.white,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1.2,
+                          Container(
+                            padding: EdgeInsets.all(screenSize.width * 0.03),
+                            decoration: BoxDecoration(
+                              color: AppColors.white.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(UIConstants.radiusXL),
+                              boxShadow: const [AppShadows.soft],
                             ),
+                            child: SizedBox(
+                              width: screenSize.width * 0.08,
+                              height: screenSize.width * 0.08,
+                              child: const CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
+                                strokeWidth: 4,
+                              ),
+                            ),
+                          ),
+                          
+                          SizedBox(height: screenSize.height * 0.03),
+                          
+                          Text(
+                            'Loading your experience...',
+                            style: TextStyle(
+                              fontSize: screenSize.width * 0.03,
+                              color: AppColors.white.withOpacity(0.8),
+                              letterSpacing: 0.5,
+                            ).merge(AppTextStyles.bodyMedium),
                             textAlign: TextAlign.center,
                           ),
                           
-                          const SizedBox(height: UIConstants.spacingS),
+                          SizedBox(height: screenSize.height * 0.01),
                           
-                          Text(
-                            'Long Exam Application',
-                            style: AppTextStyles.bodyLarge.copyWith(
-                              color: AppColors.white.withOpacity(0.9),
-                              letterSpacing: 0.5,
+                          // Progress indicator dots
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: List.generate(3, (index) => 
+                              Container(
+                                margin: const EdgeInsets.symmetric(horizontal: 4),
+                                width: 8,
+                                height: 8,
+                                decoration: BoxDecoration(
+                                  color: AppColors.white.withOpacity(0.6),
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
                             ),
-                            textAlign: TextAlign.center,
                           ),
                         ],
                       ),
                     ),
                   ),
                   
-                  SizedBox(height: UIConstants.spacingXXL * 2),
-                  
-                  // Animated Loading Indicator
-                  FadeTransition(
-                    opacity: _fadeAnimation,
-                    child: Column(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(UIConstants.spacingM),
-                          decoration: BoxDecoration(
-                            color: AppColors.white.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(UIConstants.radiusXL),
-                          ),
-                          child: const CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
-                            strokeWidth: 3,
-                          ),
-                        ),
-                        
-                        const SizedBox(height: UIConstants.spacingL),
-                        
-                        Text(
-                          'Loading your experience...',
-                          style: AppTextStyles.bodyMedium.copyWith(
-                            color: AppColors.white.withOpacity(0.8),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                  const Spacer(flex: 1),
                 ],
-              );
-            },
-          ),
+              ),
+            );
+          },
         ),
       ),
     );

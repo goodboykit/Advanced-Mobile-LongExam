@@ -94,6 +94,7 @@ class ItemCard extends StatelessWidget {
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min, // Added to prevent overflow
               children: [
                 Text(
                   title,
@@ -103,7 +104,7 @@ class ItemCard extends StatelessWidget {
                         ? theme.colorScheme.onSurface
                         : theme.colorScheme.onSurface.withOpacity(0.6),
                   ),
-                  maxLines: 2,
+                  maxLines: 1, // Reduced from 2 to 1 to prevent overflow
                   overflow: TextOverflow.ellipsis,
                 ),
                 
