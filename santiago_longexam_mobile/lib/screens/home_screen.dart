@@ -123,6 +123,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         ),
         body: PageView(
           controller: _pageController,
+          physics: const NeverScrollableScrollPhysics(), // Disable PageView scrolling to allow ListView scrolling
           children: const [
             ItemScreen(),
             ArchiveScreen(),
