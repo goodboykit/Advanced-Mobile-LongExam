@@ -46,31 +46,40 @@ class UserService {
     required String password,
     required String address,
   }) async {
-    Response response = await post(
-      Uri.parse('$host/api/users'),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode({
-        'firstName': firstName,
-        'lastName': lastName,
-        'age': age,
-        'gender': gender,
-        'contactNumber': contactNumber,
-        'email': email,
-        'username': username,
-        'password': password,
-        'address': address,
-        'isActive': true,
-        'type': 'user',
-      }),
-    );
+    try {
+      Response response = await post(
+        Uri.parse('$host/api/users'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'firstName': firstName,
+          'lastName': lastName,
+          'age': age,
+          'gender': gender,
+          'contactNumber': contactNumber,
+          'email': email,
+          'username': username,
+          'password': password,
+          'address': address,
+          'isActive': true,
+          'type': 'user',
+        }),
+      );
 
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      data = jsonDecode(response.body);
-      return data;
-    } else {
-      throw Exception('Failed to register user');
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        data = jsonDecode(response.body);
+        return data;
+      } else {
+        // Parse error message from server
+        final errorData = jsonDecode(response.body);
+        throw Exception(errorData['message'] ?? 'Failed to register user');
+      }
+    } catch (e) {
+      if (e is Exception) {
+        rethrow;
+      }
+      throw Exception('Network error: Unable to connect to server');
     }
   }
 
