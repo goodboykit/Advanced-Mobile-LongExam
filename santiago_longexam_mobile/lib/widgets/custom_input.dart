@@ -398,30 +398,67 @@ class URLInput extends StatelessWidget {
     this.isRequired = false,
   });
 
+  String _normalizeUrl(String url) {
+    url = url.trim();
+    if (url.isEmpty) return url;
+
+    // If URL doesn't start with http:// or https://, add https://
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+      url = 'https://$url';
+    }
+
+    return url;
+  }
+
   String? _defaultValidator(String? value) {
     if (value == null || value.trim().isEmpty) {
       return isRequired ? 'URL is required' : null;
     }
-    
-    final urlPattern = RegExp(
-      r'^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&=]*)$'
-    );
-    
-    if (!urlPattern.hasMatch(value.trim())) {
-      return 'Please enter a valid URL (http:// or https://)';
+
+    final normalizedUrl = _normalizeUrl(value);
+
+    try {
+      final uri = Uri.parse(normalizedUrl);
+
+      // Check if it has a valid scheme and host
+      if (!uri.hasScheme || (uri.scheme != 'http' && uri.scheme != 'https')) {
+        return 'URL must start with http:// or https://';
+      }
+
+      if (!uri.hasAuthority || uri.host.isEmpty) {
+        return 'Please enter a valid URL with a domain';
+      }
+
+      // Check if host contains a dot (basic domain validation)
+      if (!uri.host.contains('.')) {
+        return 'Please enter a valid domain name';
+      }
+
+      return null;
+    } catch (e) {
+      return 'Please enter a valid URL';
     }
-    
-    return null;
   }
 
   @override
   Widget build(BuildContext context) {
     return CustomInput(
       label: label ?? 'URL',
-      hint: hint ?? 'Enter URL',
+      hint: hint ?? 'Enter URL (protocol will be added automatically)',
       controller: controller,
       validator: validator ?? _defaultValidator,
-      onChanged: onChanged,
+      onChanged: (value) {
+        onChanged?.call(value);
+      },
+      onSubmitted: (value) {
+        if (controller != null && value.isNotEmpty) {
+          final normalizedUrl = _normalizeUrl(value);
+          controller!.text = normalizedUrl;
+          controller!.selection = TextSelection.fromPosition(
+            TextPosition(offset: normalizedUrl.length),
+          );
+        }
+      },
       keyboardType: TextInputType.url,
       prefixIcon: const Icon(
         Icons.link_outlined,

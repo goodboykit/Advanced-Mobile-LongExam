@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../models/item_model.dart';
 import '../services/item_service.dart';
 import '../widgets/custom_input.dart';
@@ -71,10 +72,15 @@ class _DetailScreenState extends State<DetailScreen> {
       return;
     }
 
+    String photoUrl = _photoCtrl.text.trim();
+    if (photoUrl.isNotEmpty && !photoUrl.startsWith('http://') && !photoUrl.startsWith('https://')) {
+      photoUrl = 'https://$photoUrl';
+    }
+
     final payload = {
       'name': _nameCtrl.text.trim(),
       'description': _parseDesc(_descCtrl.text),
-      'photoUrl': _photoCtrl.text.trim(),
+      'photoUrl': photoUrl,
       'qtyTotal': total,
       'qtyAvailable': avail,
       'isActive': _isActive,
@@ -153,12 +159,22 @@ class _DetailScreenState extends State<DetailScreen> {
     }
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
-      child: Image(
-        image: NetworkImage(url),
+      child: CachedNetworkImage(
+        imageUrl: url,
         height: 160.h,
         width: double.infinity,
         fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => Container(
+        placeholder: (context, url) => Container(
+          height: 160.h,
+          decoration: BoxDecoration(
+            color: Colors.grey.shade200,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: Colors.grey.shade300),
+          ),
+          alignment: Alignment.center,
+          child: const CircularProgressIndicator(),
+        ),
+        errorWidget: (context, url, error) => Container(
           height: 160.h,
           decoration: BoxDecoration(
             color: Colors.grey.shade200,

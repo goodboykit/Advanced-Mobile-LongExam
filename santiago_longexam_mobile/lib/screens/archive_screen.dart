@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import '../models/item_model.dart';
 import '../services/item_service.dart';
@@ -73,12 +74,23 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
     }
     return ClipRRect(
       borderRadius: BorderRadius.circular(8),
-      child: Image(
-        image: NetworkImage(url),
+      child: CachedNetworkImage(
+        imageUrl: url,
         width: 72.sp,
         height: 72.sp,
         fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => Container(
+        placeholder: (context, url) => Container(
+          width: 72.sp,
+          height: 72.sp,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Colors.grey.shade300),
+          ),
+          child: const Center(
+            child: CircularProgressIndicator(strokeWidth: 2),
+          ),
+        ),
+        errorWidget: (context, url, error) => Container(
           width: 72.sp,
           height: 72.sp,
           decoration: BoxDecoration(

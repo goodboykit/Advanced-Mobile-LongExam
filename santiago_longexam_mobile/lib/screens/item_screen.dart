@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import '../models/item_model.dart';
 import '../services/item_service.dart';
@@ -29,37 +30,18 @@ class _ItemScreenState extends State<ItemScreen> {
   Future<void> _loadItems() async {
     try {
       final res = await _svc.getAllItem();
+      debugPrint('API Response: $res');
       final list =
           (res['items'] ?? res) as dynamic; // supports {items:[...]} OR [...]
       final List data = list is List ? list : (list['data'] ?? []);
+      debugPrint('Parsed data: $data');
       _items
         ..clear()
         ..addAll(data.map<Item>((e) => Item.fromJson(e)));
-      
-      // If no items from server, add some dummy items for testing
-      if (_items.isEmpty) {
-        _addDummyItems();
-      }
+      debugPrint('Loaded ${_items.length} items');
     } catch (e) {
       debugPrint('Error loading items: $e');
-      // Add dummy items if server fails
-      _addDummyItems();
     }
-  }
-
-  void _addDummyItems() {
-    final dummyItems = [
-      {'uid': '1', 'name': 'Test Item 1', 'description': ['First test item'], 'photoUrl': '', 'qtyTotal': 10, 'qtyAvailable': 8, 'isActive': true},
-      {'uid': '2', 'name': 'Test Item 2', 'description': ['Second test item'], 'photoUrl': '', 'qtyTotal': 5, 'qtyAvailable': 3, 'isActive': true},
-      {'uid': '3', 'name': 'Test Item 3', 'description': ['Third test item'], 'photoUrl': '', 'qtyTotal': 15, 'qtyAvailable': 12, 'isActive': true},
-      {'uid': '4', 'name': 'Test Item 4', 'description': ['Fourth test item'], 'photoUrl': '', 'qtyTotal': 20, 'qtyAvailable': 18, 'isActive': true},
-      {'uid': '5', 'name': 'Test Item 5', 'description': ['Fifth test item'], 'photoUrl': '', 'qtyTotal': 7, 'qtyAvailable': 5, 'isActive': true},
-      {'uid': '6', 'name': 'Test Item 6', 'description': ['Sixth test item'], 'photoUrl': '', 'qtyTotal': 12, 'qtyAvailable': 10, 'isActive': true},
-      {'uid': '7', 'name': 'Test Item 7', 'description': ['Seventh test item'], 'photoUrl': '', 'qtyTotal': 25, 'qtyAvailable': 20, 'isActive': true},
-      {'uid': '8', 'name': 'Test Item 8', 'description': ['Eighth test item'], 'photoUrl': '', 'qtyTotal': 30, 'qtyAvailable': 25, 'isActive': true},
-    ];
-    
-    _items.addAll(dummyItems.map<Item>((e) => Item.fromJson(e)));
   }
 
   // ---- Add Item Dialog ----
@@ -94,10 +76,15 @@ class _ItemScreenState extends State<ItemScreen> {
               setLocal(() => isSaving = true);
 
               try {
+                String photoUrl = photoCtrl.text.trim();
+                if (photoUrl.isNotEmpty && !photoUrl.startsWith('http://') && !photoUrl.startsWith('https://')) {
+                  photoUrl = 'https://$photoUrl';
+                }
+
                 final payload = {
                   'name': nameCtrl.text.trim(),
                   'description': _parseDesc(descCtrl.text),
-                  'photoUrl': photoCtrl.text.trim(),
+                  'photoUrl': photoUrl,
                   'qtyTotal': int.parse(qtyTotalCtrl.text.trim()),
                   'qtyAvailable': int.parse(qtyAvailCtrl.text.trim()),
                   'isActive': isActive,
@@ -271,12 +258,23 @@ class _ItemScreenState extends State<ItemScreen> {
     }
     return ClipRRect(
       borderRadius: BorderRadius.circular(8),
-      child: Image(
-        image: NetworkImage(url),
+      child: CachedNetworkImage(
+        imageUrl: url,
         width: imageSize,
         height: imageSize,
         fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => Container(
+        placeholder: (context, url) => Container(
+          width: imageSize,
+          height: imageSize,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: Colors.grey.shade300),
+          ),
+          child: const Center(
+            child: CircularProgressIndicator(strokeWidth: 2),
+          ),
+        ),
+        errorWidget: (context, url, error) => Container(
           width: imageSize,
           height: imageSize,
           decoration: BoxDecoration(
