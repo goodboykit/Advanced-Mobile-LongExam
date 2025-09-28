@@ -26,26 +26,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _loadUserData() async {
     try {
       final userService = UserService();
-      
+
+      // Get login type using the service method
+      final loginTypeResult = await userService.getLoginType();
+
       // Check MongoDB user data
       final mongoData = await userService.getUserData();
-      
+
       // Check Firebase user
       final firebaseUser = userService.currentUser;
-      
+
       setState(() {
         userData = mongoData;
         this.firebaseUser = firebaseUser;
-        
-        // Determine login type
-        if (firebaseUser != null) {
-          loginType = 'Firebase';
-        } else if (mongoData['email']?.isNotEmpty == true) {
-          loginType = 'MongoDB';
-        } else {
-          loginType = 'Not logged in';
-        }
-        
+        loginType = loginTypeResult;
         isLoading = false;
       });
     } catch (e) {
@@ -119,8 +113,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   
                   SizedBox(height: 20.h),
                   
-                  // Management Buttons (only for Firebase users)
-                  if (loginType == 'Firebase' && firebaseUser != null) ...[
+                  // Management Buttons (for both Firebase and MongoDB users)
+                  if (loginType == 'Firebase' || loginType == 'MongoDB') ...[
                     _buildActionButton(
                       'Update Username',
                       Icons.person,
@@ -222,7 +216,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   void _showUpdateUsernameDialog() {
     final controller = TextEditingController();
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -243,7 +237,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
             onPressed: () async {
               if (controller.text.isNotEmpty) {
                 try {
-                  await UserService().updateUsername(username: controller.text);
+                  final userService = UserService();
+
+                  if (loginType == 'Firebase') {
+                    await userService.updateUsername(username: controller.text);
+                  } else if (loginType == 'MongoDB') {
+                    await userService.updateUsernameMongoDb(username: controller.text);
+                  }
+
                   if (context.mounted) {
                     Navigator.of(context).pop();
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -270,7 +271,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void _showChangePasswordDialog() {
     final currentPasswordController = TextEditingController();
     final newPasswordController = TextEditingController();
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -304,14 +305,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           TextButton(
             onPressed: () async {
-              if (currentPasswordController.text.isNotEmpty && 
+              if (currentPasswordController.text.isNotEmpty &&
                   newPasswordController.text.isNotEmpty) {
                 try {
-                  await UserService().resetPasswordFromCurrentPassword(
-                    currentPassword: currentPasswordController.text,
-                    newPassword: newPasswordController.text,
-                    email: firebaseUser?.email ?? '',
-                  );
+                  final userService = UserService();
+
+                  if (loginType == 'Firebase') {
+                    await userService.resetPasswordFromCurrentPassword(
+                      currentPassword: currentPasswordController.text,
+                      newPassword: newPasswordController.text,
+                      email: firebaseUser?.email ?? '',
+                    );
+                  } else if (loginType == 'MongoDB') {
+                    await userService.changePasswordMongoDb(
+                      currentPassword: currentPasswordController.text,
+                      newPassword: newPasswordController.text,
+                    );
+                  }
+
                   if (context.mounted) {
                     Navigator.of(context).pop();
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -336,7 +347,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   void _showDeleteAccountDialog() {
     final passwordController = TextEditingController();
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -365,10 +376,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
             onPressed: () async {
               if (passwordController.text.isNotEmpty) {
                 try {
-                  await UserService().deleteAccount(
-                    email: firebaseUser?.email ?? '',
-                    password: passwordController.text,
-                  );
+                  final userService = UserService();
+
+                  if (loginType == 'Firebase') {
+                    await userService.deleteAccount(
+                      email: firebaseUser?.email ?? '',
+                      password: passwordController.text,
+                    );
+                  } else if (loginType == 'MongoDB') {
+                    await userService.deleteAccountMongoDb(
+                      password: passwordController.text,
+                    );
+                  }
+
                   if (context.mounted) {
                     Navigator.of(context).pop();
                     Navigator.pushNamedAndRemoveUntil(

@@ -292,6 +292,18 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                         ),
                       ),
+
+                      const SizedBox(height: UIConstants.spacingS),
+
+                      // Helpful note
+                      Text(
+                        'Choose your preferred authentication method above.',
+                        style: AppTextStyles.bodySmall.copyWith(
+                          color: AppColors.textSecondary,
+                          fontStyle: FontStyle.italic,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
                       const SizedBox(height: UIConstants.spacingL),
                       
                       // Sign Up Link

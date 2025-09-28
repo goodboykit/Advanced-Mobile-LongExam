@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -17,14 +18,33 @@ import 'screens/signup_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // Initialize Firebase
-  await Firebase.initializeApp();
-  
+
+  // Initialize Firebase with options
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } catch (e) {
+    if (kDebugMode) {
+      print('Firebase initialization failed: $e');
+    }
+    // Continue without Firebase if initialization fails
+  }
+
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]).then((
     _,
   ) async {
-    await dotenv.load(fileName: 'assets/.env');
+    // Only load .env file for non-web platforms
+    if (!kIsWeb) {
+      try {
+        await dotenv.load(fileName: 'assets/.env');
+      } catch (e) {
+        if (kDebugMode) {
+          print('Failed to load .env file: $e');
+        }
+        // Continue without .env file - use defaults
+      }
+    }
     runApp(const MainApp());
   });
 }

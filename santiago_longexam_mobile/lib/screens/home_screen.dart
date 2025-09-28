@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '/screens/item_screen.dart';
-import 'archive_screen.dart';
+import 'chat_screen.dart';
 import 'profile_screen.dart';
 
 import '../widgets/custom_text.dart';
@@ -52,10 +52,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       'title': 'Items'
     },
     {
-      'icon': Icons.archive_outlined,
-      'activeIcon': Icons.archive,
-      'label': 'Archive',
-      'title': 'Archive'
+      'icon': Icons.chat_bubble_outline,
+      'activeIcon': Icons.chat_bubble,
+      'label': 'Chat',
+      'title': 'Chat'
     },
     {
       'icon': Icons.person_outline,
@@ -126,7 +126,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           physics: const NeverScrollableScrollPhysics(), // Disable PageView scrolling to allow ListView scrolling
           children: const [
             ItemScreen(),
-            ArchiveScreen(),
+            ChatScreen(),
             ProfileScreen(),
           ],
           onPageChanged: (page) {

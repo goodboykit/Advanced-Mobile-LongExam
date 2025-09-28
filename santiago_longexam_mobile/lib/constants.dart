@@ -1,8 +1,17 @@
 // ignore_for_file: constant_identifier_names
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-var host = dotenv.env['HOST']; // API
+// API Configuration with fallbacks for web
+String get host {
+  if (kIsWeb) {
+    // For web builds, use hardcoded values since .env files can be problematic
+    return 'http://localhost:5000';
+  }
+  // For mobile builds, try to load from .env file
+  return dotenv.env['HOST'] ?? 'http://localhost:5000';
+}
 
 // UI Constants
 class UIConstants {

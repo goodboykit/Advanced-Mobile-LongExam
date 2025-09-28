@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:http/http.dart';
+import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +22,7 @@ class UserService {
 
   Future<Map<String, dynamic>> loginUser(String email, String password) async {
     try {
-      Response response = await post(
+      http.Response response = await http.post(
         Uri.parse('$host/api/users/login'),
         headers: {
           'Content-Type': 'application/json',
@@ -61,7 +61,7 @@ class UserService {
     required String address,
   }) async {
     try {
-      Response response = await post(
+      http.Response response = await http.post(
         Uri.parse('$host/api/users'),
         headers: {
           'Content-Type': 'application/json',
@@ -195,5 +195,139 @@ class UserService {
   /// **Send Password Reset Email**
   Future<void> sendPasswordResetEmail({required String email}) async {
     await firebaseAuth.sendPasswordResetEmail(email: email);
+  }
+
+  // ========== MONGODB PROFILE MANAGEMENT METHODS ==========
+
+  /// **MongoDB Update Username**
+  Future<Map<String, dynamic>> updateUsernameMongoDb({required String username}) async {
+    final userData = await getUserData();
+    final token = userData['token'];
+
+    if (token == null || token.isEmpty) {
+      throw Exception('No authentication token found');
+    }
+
+    try {
+      http.Response response = await http.put(
+        Uri.parse('$host/api/users/update-username'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({
+          'username': username,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        return responseData;
+      } else {
+        final errorData = jsonDecode(response.body);
+        throw Exception(errorData['message'] ?? 'Failed to update username');
+      }
+    } catch (e) {
+      if (e is Exception) {
+        rethrow;
+      }
+      throw Exception('Network error: Unable to connect to server');
+    }
+  }
+
+  /// **MongoDB Change Password**
+  Future<Map<String, dynamic>> changePasswordMongoDb({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    final userData = await getUserData();
+    final token = userData['token'];
+
+    if (token == null || token.isEmpty) {
+      throw Exception('No authentication token found');
+    }
+
+    try {
+      http.Response response = await http.put(
+        Uri.parse('$host/api/users/change-password'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({
+          'currentPassword': currentPassword,
+          'newPassword': newPassword,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        return responseData;
+      } else {
+        final errorData = jsonDecode(response.body);
+        throw Exception(errorData['message'] ?? 'Failed to change password');
+      }
+    } catch (e) {
+      if (e is Exception) {
+        rethrow;
+      }
+      throw Exception('Network error: Unable to connect to server');
+    }
+  }
+
+  /// **MongoDB Delete Account**
+  Future<Map<String, dynamic>> deleteAccountMongoDb({
+    required String password,
+  }) async {
+    final userData = await getUserData();
+    final token = userData['token'];
+
+    if (token == null || token.isEmpty) {
+      throw Exception('No authentication token found');
+    }
+
+    try {
+      http.Response response = await http.delete(
+        Uri.parse('$host/api/users/delete-account'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({
+          'password': password,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        // Clear local data after successful deletion
+        await logout();
+        return responseData;
+      } else {
+        final errorData = jsonDecode(response.body);
+        throw Exception(errorData['message'] ?? 'Failed to delete account');
+      }
+    } catch (e) {
+      if (e is Exception) {
+        rethrow;
+      }
+      throw Exception('Network error: Unable to connect to server');
+    }
+  }
+
+  /// **Get Login Type** - Determines if user is logged in via Firebase or MongoDB
+  Future<String> getLoginType() async {
+    // Check Firebase user
+    if (currentUser != null) {
+      return 'Firebase';
+    }
+
+    // Check MongoDB user data
+    final userData = await getUserData();
+    if (userData['email']?.isNotEmpty == true && userData['token']?.isNotEmpty == true) {
+      return 'MongoDB';
+    }
+
+    return 'Not logged in';
   }
 }

@@ -38,7 +38,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     super.dispose();
   }
 
-  Future<void> _handleSignUp() async {
+  Future<void> _handleMongoDBSignUp() async {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() {
@@ -67,7 +67,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
       // Show success message
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Registration successful!')),
+        const SnackBar(content: Text('MongoDB Registration successful!')),
       );
 
       // Navigate to home or login
@@ -81,7 +81,48 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
       // Show error message
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Registration failed: ${e.toString()}')),
+        SnackBar(content: Text('MongoDB Registration failed: ${e.toString()}')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _handleFirebaseSignUp() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final userCredential = await _userService.createAccount(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+
+      // Update display name with the username
+      await _userService.updateUsername(username: _usernameController.text.trim());
+
+      if (!mounted) return;
+
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Firebase Registration successful!')),
+      );
+
+      // Navigate to home
+      Navigator.pushReplacementNamed(context, '/home');
+    } catch (e) {
+      if (!mounted) return;
+
+      // Show error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Firebase Registration failed: ${e.toString()}')),
       );
     } finally {
       if (mounted) {
@@ -442,18 +483,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             ),
                           ),
                           
-                          // Sign Up Button
+                          // MongoDB Sign Up Button
                           Container(
                             width: double.infinity,
                             height: screenSize.height * 0.065,
-                            margin: EdgeInsets.symmetric(vertical: screenSize.height * 0.02),
+                            margin: EdgeInsets.symmetric(vertical: screenSize.height * 0.01),
                             decoration: BoxDecoration(
                               gradient: AppGradients.primaryGradient,
                               borderRadius: BorderRadius.circular(UIConstants.radiusL),
                               boxShadow: const [AppShadows.soft],
                             ),
                             child: ElevatedButton(
-                              onPressed: _isLoading ? null : _handleSignUp,
+                              onPressed: _isLoading ? null : _handleMongoDBSignUp,
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.transparent,
                                 shadowColor: Colors.transparent,
@@ -471,16 +512,68 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                       ),
                                     )
                                   : Text(
-                                      'Create Account',
+                                      'Create Account (MongoDB)',
                                       style: TextStyle(
-                                        fontSize: screenSize.width * 0.045,
+                                        fontSize: screenSize.width * 0.04,
                                         fontWeight: FontWeight.w600,
                                         color: AppColors.white,
                                       ),
                                     ),
                             ),
                           ),
-                
+
+                          // Firebase Sign Up Button
+                          Container(
+                            width: double.infinity,
+                            height: screenSize.height * 0.065,
+                            margin: EdgeInsets.symmetric(vertical: screenSize.height * 0.01),
+                            decoration: BoxDecoration(
+                              color: AppColors.secondary,
+                              borderRadius: BorderRadius.circular(UIConstants.radiusL),
+                              boxShadow: const [AppShadows.soft],
+                            ),
+                            child: ElevatedButton(
+                              onPressed: _isLoading ? null : _handleFirebaseSignUp,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.transparent,
+                                shadowColor: Colors.transparent,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(UIConstants.radiusL),
+                                ),
+                              ),
+                              child: _isLoading
+                                  ? const SizedBox(
+                                      height: 24,
+                                      width: 24,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 3,
+                                        valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
+                                      ),
+                                    )
+                                  : Text(
+                                      'Create Account (Firebase)',
+                                      style: TextStyle(
+                                        fontSize: screenSize.width * 0.04,
+                                        fontWeight: FontWeight.w600,
+                                        color: AppColors.white,
+                                      ),
+                                    ),
+                            ),
+                          ),
+
+                          const SizedBox(height: UIConstants.spacingS),
+
+                          // Helpful note
+                          Text(
+                            'Choose your preferred authentication method above.',
+                            style: TextStyle(
+                              fontSize: screenSize.width * 0.03,
+                              color: AppColors.textSecondary,
+                              fontStyle: FontStyle.italic,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+
                           // Login Link
                           TextButton(
                             onPressed: () {

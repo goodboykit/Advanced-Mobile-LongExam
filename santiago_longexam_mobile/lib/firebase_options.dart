@@ -41,48 +41,48 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'PLACEHOLDER_API_KEY',
-    appId: 'PLACEHOLDER_APP_ID',
-    messagingSenderId: 'PLACEHOLDER_SENDER_ID',
+    apiKey: 'AIzaSyDET9BnYEHUReH4Jn7HgkMQcFKuG5jcBus',
+    appId: '1:933301708273:web:6c46e16768a25af066d050',
+    messagingSenderId: '933301708273',
     projectId: 'advmobprog-firebase-178d6',
     authDomain: 'advmobprog-firebase-178d6.firebaseapp.com',
-    storageBucket: 'advmobprog-firebase-178d6.appspot.com',
-    measurementId: 'PLACEHOLDER_MEASUREMENT_ID',
+    storageBucket: 'advmobprog-firebase-178d6.firebasestorage.app',
+    measurementId: 'G-DEMO123456',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'PLACEHOLDER_API_KEY',
-    appId: 'PLACEHOLDER_APP_ID',
-    messagingSenderId: 'PLACEHOLDER_SENDER_ID',
+    apiKey: 'AIzaSyDET9BnYEHUReH4Jn7HgkMQcFKuG5jcBus',
+    appId: '1:933301708273:android:6c46e16768a25af066d050',
+    messagingSenderId: '933301708273',
     projectId: 'advmobprog-firebase-178d6',
-    storageBucket: 'advmobprog-firebase-178d6.appspot.com',
+    storageBucket: 'advmobprog-firebase-178d6.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'PLACEHOLDER_API_KEY',
-    appId: 'PLACEHOLDER_APP_ID',
-    messagingSenderId: 'PLACEHOLDER_SENDER_ID',
+    apiKey: 'AIzaSyDET9BnYEHUReH4Jn7HgkMQcFKuG5jcBus',
+    appId: '1:933301708273:ios:6c46e16768a25af066d050',
+    messagingSenderId: '933301708273',
     projectId: 'advmobprog-firebase-178d6',
-    storageBucket: 'advmobprog-firebase-178d6.appspot.com',
+    storageBucket: 'advmobprog-firebase-178d6.firebasestorage.app',
     iosBundleId: 'com.example.lab6',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'PLACEHOLDER_API_KEY',
-    appId: 'PLACEHOLDER_APP_ID',
-    messagingSenderId: 'PLACEHOLDER_SENDER_ID',
+    apiKey: 'AIzaSyDET9BnYEHUReH4Jn7HgkMQcFKuG5jcBus',
+    appId: '1:933301708273:ios:6c46e16768a25af066d050',
+    messagingSenderId: '933301708273',
     projectId: 'advmobprog-firebase-178d6',
-    storageBucket: 'advmobprog-firebase-178d6.appspot.com',
+    storageBucket: 'advmobprog-firebase-178d6.firebasestorage.app',
     iosBundleId: 'com.example.lab6',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'PLACEHOLDER_API_KEY',
-    appId: 'PLACEHOLDER_APP_ID',
-    messagingSenderId: 'PLACEHOLDER_SENDER_ID',
+    apiKey: 'AIzaSyDET9BnYEHUReH4Jn7HgkMQcFKuG5jcBus',
+    appId: '1:933301708273:web:6c46e16768a25af066d050',
+    messagingSenderId: '933301708273',
     projectId: 'advmobprog-firebase-178d6',
     authDomain: 'advmobprog-firebase-178d6.firebaseapp.com',
-    storageBucket: 'advmobprog-firebase-178d6.appspot.com',
-    measurementId: 'PLACEHOLDER_MEASUREMENT_ID',
+    storageBucket: 'advmobprog-firebase-178d6.firebasestorage.app',
+    measurementId: 'G-DEMO123456',
   );
 }
