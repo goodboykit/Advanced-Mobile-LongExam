@@ -2,14 +2,18 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../constants.dart';
 
 class UserService {
   Map<String, dynamic> data = {};
-  
+
   // Firebase Auth instance
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+
+  // Firestore instance
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
   
   // Global UserService instance
   static ValueNotifier<UserService> userService = ValueNotifier(UserService());
@@ -137,21 +141,50 @@ class UserService {
     required String email,
     required String password,
   }) async {
-    return await firebaseAuth.signInWithEmailAndPassword(
+    UserCredential userCredential = await firebaseAuth.signInWithEmailAndPassword(
       email: email,
       password: password,
     );
+
+    // Check if Firestore document exists, create if it doesn't
+    final String uid = userCredential.user!.uid;
+    final doc = await firestore.collection('Users').doc(uid).get();
+
+    if (!doc.exists) {
+      // Create Firestore user document for existing Firebase Auth users
+      await firestore.collection('Users').doc(uid).set({
+        'uid': uid,
+        'email': email,
+        'firstName': '',
+        'lastName': '',
+      });
+    }
+
+    return userCredential;
   }
   
   /// **Firebase Create Account with Email and Password**
   Future<UserCredential> createAccount({
     required String email,
     required String password,
+    String? firstName,
+    String? lastName,
   }) async {
-    return await firebaseAuth.createUserWithEmailAndPassword(
+    // Create Firebase Auth user
+    UserCredential userCredential = await firebaseAuth.createUserWithEmailAndPassword(
       email: email,
       password: password,
     );
+
+    // Create Firestore user document
+    await firestore.collection('Users').doc(userCredential.user!.uid).set({
+      'uid': userCredential.user!.uid,
+      'email': email,
+      'firstName': firstName ?? '',
+      'lastName': lastName ?? '',
+    });
+
+    return userCredential;
   }
   
   /// **Firebase Sign Out**
@@ -195,6 +228,31 @@ class UserService {
   /// **Send Password Reset Email**
   Future<void> sendPasswordResetEmail({required String email}) async {
     await firebaseAuth.sendPasswordResetEmail(email: email);
+  }
+
+  /// **Create Firestore Document for Current Firebase User** (for existing users)
+  Future<void> createFirestoreUserDocument({
+    String? firstName,
+    String? lastName,
+  }) async {
+    if (currentUser == null) {
+      throw Exception('No Firebase user is currently signed in');
+    }
+
+    final String uid = currentUser!.uid;
+    final String email = currentUser!.email ?? '';
+
+    // Check if document already exists
+    final doc = await firestore.collection('Users').doc(uid).get();
+    if (!doc.exists) {
+      // Create Firestore user document
+      await firestore.collection('Users').doc(uid).set({
+        'uid': uid,
+        'email': email,
+        'firstName': firstName ?? '',
+        'lastName': lastName ?? '',
+      });
+    }
   }
 
   // ========== MONGODB PROFILE MANAGEMENT METHODS ==========

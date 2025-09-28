@@ -103,6 +103,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
       final userCredential = await _userService.createAccount(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
+        firstName: _firstNameController.text.trim(),
+        lastName: _lastNameController.text.trim(),
       );
 
       // Update display name with the username

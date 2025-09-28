@@ -7,10 +7,10 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 String get host {
   if (kIsWeb) {
     // For web builds, use hardcoded values since .env files can be problematic
-    return 'http://localhost:5000';
+    return 'http://localhost:3001';
   }
   // For mobile builds, try to load from .env file
-  return dotenv.env['HOST'] ?? 'http://localhost:5000';
+  return dotenv.env['HOST'] ?? 'http://localhost:3001';
 }
 
 // UI Constants

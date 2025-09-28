@@ -11,6 +11,35 @@ const getUsers = async (req, res) => {
   }
 };
 
+const getAllUsersForChat = async (req, res) => {
+  try {
+    // Get all users excluding passwords, sorted by firstName
+    const users = await User.find(
+      { isActive: true },
+      {
+        _id: 1,
+        firstName: 1,
+        lastName: 1,
+        email: 1,
+        username: 1,
+        type: 1,
+        createdAt: 1
+      }
+    ).sort({ firstName: 1 });
+
+    res.json({
+      success: true,
+      users: users,
+      count: users.length
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
 const createUser = async (req, res) => {
   try {
     const { 
@@ -249,4 +278,4 @@ const deleteAccount = async (req, res) => {
   }
 };
 
-module.exports = { getUsers, createUser, loginUser, updateUsername, changePassword, deleteAccount };
+module.exports = { getUsers, getAllUsersForChat, createUser, loginUser, updateUsername, changePassword, deleteAccount };

@@ -15,33 +15,61 @@ connectDB();
 
 app.use(express.json());
 
-//Middleware
-app.use(jsonParser);
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cors());
-
+// CORS Configuration
 const corsOptions = {
-  origin: '*',
+  origin: [
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'http://localhost:59494',
+    'http://127.0.0.1:59494',
+    'http://localhost:8080',
+    'http://127.0.0.1:8080',
+    'http://localhost:5000',
+    'http://127.0.0.1:5000'
+  ],
   credentials: true,
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-  methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
+  allowedHeaders: [
+    'Content-Type', 
+    'Authorization', 
+    'X-Requested-With',
+    'Accept',
+    'Origin',
+    'Access-Control-Request-Method',
+    'Access-Control-Request-Headers'
+  ],
+  methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
   preflightContinue: false,
   optionsSuccessStatus: 204,
 };
+
+// Apply CORS middleware
 app.use(cors(corsOptions));
 
+// Additional CORS headers for all responses
 app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader(
+  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header(
     'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization'
+    'Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma'
   );
-  res.setHeader(
+  res.header(
     'Access-Control-Allow-Methods',
     'GET, POST, PUT, DELETE, PATCH, OPTIONS'
   );
+  
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+  
   next();
 });
+
+//Middleware
+app.use(jsonParser);
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // Routes
 app.use('/api/users', userRoutes);
@@ -53,5 +81,5 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: 'Server Error' });
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
