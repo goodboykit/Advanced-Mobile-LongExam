@@ -1,6 +1,6 @@
 #!/bin/sh
 # This is a generated file; do not edit or check into version control.
-export "FLUTTER_ROOT=/Applications/development/flutter"
+export "FLUTTER_ROOT=/opt/homebrew/share/flutter"
 export "FLUTTER_APPLICATION_PATH=/Users/goodboykit/Documents/Advanced-Mobile-LongExam/santiago_longexam_mobile"
 export "COCOAPODS_PARALLEL_CODE_SIGN=true"
 export "FLUTTER_TARGET=lib/main.dart"

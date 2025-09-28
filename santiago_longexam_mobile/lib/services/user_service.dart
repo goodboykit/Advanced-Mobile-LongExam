@@ -1,10 +1,24 @@
 import 'dart:convert';
 import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import '../constants.dart';
 
 class UserService {
   Map<String, dynamic> data = {};
+  
+  // Firebase Auth instance
+  final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+  
+  // Global UserService instance
+  static ValueNotifier<UserService> userService = ValueNotifier(UserService());
+  
+  // Get current user
+  User? get currentUser => firebaseAuth.currentUser;
+  
+  // Get auth state changes stream
+  Stream<User?> get authStateChanges => firebaseAuth.authStateChanges();
 
   Future<Map<String, dynamic>> loginUser(String email, String password) async {
     try {
@@ -114,5 +128,72 @@ class UserService {
   Future<void> logout() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.clear();
+  }
+  
+  // ========== FIREBASE AUTHENTICATION METHODS ==========
+  
+  /// **Firebase Sign In with Email and Password**
+  Future<UserCredential> signIn({
+    required String email,
+    required String password,
+  }) async {
+    return await firebaseAuth.signInWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+  }
+  
+  /// **Firebase Create Account with Email and Password**
+  Future<UserCredential> createAccount({
+    required String email,
+    required String password,
+  }) async {
+    return await firebaseAuth.createUserWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+  }
+  
+  /// **Firebase Sign Out**
+  Future<void> signOut() async {
+    await firebaseAuth.signOut();
+  }
+  
+  /// **Update Username/Display Name**
+  Future<void> updateUsername({required String username}) async {
+    await currentUser!.updateDisplayName(username);
+  }
+  
+  /// **Delete User Account**
+  Future<void> deleteAccount({
+    required String email,
+    required String password,
+  }) async {
+    AuthCredential credential = EmailAuthProvider.credential(
+      email: email,
+      password: password,
+    );
+    await currentUser!.reauthenticateWithCredential(credential);
+    await currentUser!.delete();
+    await firebaseAuth.signOut();
+  }
+  
+  /// **Reset Password from Current Password**
+  Future<void> resetPasswordFromCurrentPassword({
+    required String currentPassword,
+    required String newPassword,
+    required String email,
+  }) async {
+    AuthCredential credential = EmailAuthProvider.credential(
+      email: email,
+      password: currentPassword,
+    );
+    await currentUser!.reauthenticateWithCredential(credential);
+    await currentUser!.updatePassword(newPassword);
+  }
+  
+  /// **Send Password Reset Email**
+  Future<void> sendPasswordResetEmail({required String email}) async {
+    await firebaseAuth.sendPasswordResetEmail(email: email);
   }
 }

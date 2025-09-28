@@ -24,7 +24,7 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  Future<void> _handleLogin() async {
+  Future<void> _handleMongoDBLogin() async {
     if (!_formKey.currentState!.validate()) return;
     
     setState(() {
@@ -44,7 +44,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       // Show success message
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Login successful!')),
+        const SnackBar(content: Text('MongoDB Login successful!')),
       );
 
       // Navigate to home screen
@@ -54,7 +54,45 @@ class _LoginScreenState extends State<LoginScreen> {
 
       // Show error message
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Login failed: ${e.toString()}')),
+        SnackBar(content: Text('MongoDB Login failed: ${e.toString()}')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _handleFirebaseLogin() async {
+    if (!_formKey.currentState!.validate()) return;
+    
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final userCredential = await _userService.signIn(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
+
+      if (!mounted) return;
+
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Firebase Login successful!')),
+      );
+
+      // Navigate to home screen
+      Navigator.pushReplacementNamed(context, '/home');
+    } catch (e) {
+      if (!mounted) return;
+
+      // Show error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Firebase Login failed: ${e.toString()}')),
       );
     } finally {
       if (mounted) {
@@ -182,6 +220,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         },
                       ),
                       const SizedBox(height: UIConstants.spacingXL),
+                      
+                      // MongoDB Login Button
                       Container(
                         decoration: BoxDecoration(
                           gradient: AppGradients.primaryGradient,
@@ -189,7 +229,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           boxShadow: const [AppShadows.soft],
                         ),
                         child: ElevatedButton(
-                          onPressed: _isLoading ? null : _handleLogin,
+                          onPressed: _isLoading ? null : _handleMongoDBLogin,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.transparent,
                             shadowColor: Colors.transparent,
@@ -208,7 +248,44 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ),
                                 )
                               : Text(
-                                  'Log In',
+                                  'Log In (MongoDB)',
+                                  style: AppTextStyles.button.copyWith(
+                                    color: AppColors.white,
+                                  ),
+                                ),
+                        ),
+                      ),
+                      
+                      const SizedBox(height: UIConstants.spacingM),
+                      
+                      // Firebase Login Button
+                      Container(
+                        decoration: BoxDecoration(
+                          color: AppColors.secondary,
+                          borderRadius: BorderRadius.circular(UIConstants.radiusL),
+                          boxShadow: const [AppShadows.soft],
+                        ),
+                        child: ElevatedButton(
+                          onPressed: _isLoading ? null : _handleFirebaseLogin,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.transparent,
+                            shadowColor: Colors.transparent,
+                            padding: const EdgeInsets.symmetric(vertical: UIConstants.spacingM),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(UIConstants.radiusL),
+                            ),
+                          ),
+                          child: _isLoading
+                              ? const SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
+                                  ),
+                                )
+                              : Text(
+                                  'Log In (Firebase)',
                                   style: AppTextStyles.button.copyWith(
                                     color: AppColors.white,
                                   ),

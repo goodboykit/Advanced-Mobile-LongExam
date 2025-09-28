@@ -74,13 +74,54 @@ class SettingsScreen extends StatelessWidget {
 
           GestureDetector(
             onTap: () async {
-              await UserService().logout();
-              if (context.mounted) {
-                Navigator.pushNamedAndRemoveUntil(
-                  context,
-                  '/login',
-                  (route) => false,
-                );
+              final userService = UserService();
+              
+              // Show confirmation dialog
+              final shouldLogout = await showDialog<bool>(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('Logout'),
+                  content: const Text('Are you sure you want to logout?'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(false),
+                      child: const Text('Cancel'),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(true),
+                      child: const Text('Logout'),
+                    ),
+                  ],
+                ),
+              );
+              
+              if (shouldLogout == true) {
+                try {
+                  // Clear MongoDB session/token
+                  await userService.logout();
+                  
+                  // Sign out from Firebase (if signed in)
+                  await userService.signOut();
+                  
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Logged out successfully')),
+                    );
+                    
+                    // Navigate to login screen
+                    Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      '/login',
+                      (route) => false,
+                    );
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Logout error: ${e.toString()}')),
+                    );
+                  }
+                }
               }
             },
             child: Card(
