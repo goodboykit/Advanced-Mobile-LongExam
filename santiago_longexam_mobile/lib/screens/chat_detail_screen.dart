@@ -90,6 +90,33 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
     }
   }
 
+  String _getDisplayName() {
+    final firstName = widget.tappedUser['firstName']?.toString() ?? '';
+    final lastName = widget.tappedUser['lastName']?.toString() ?? '';
+    final username = widget.tappedUser['username']?.toString() ?? '';
+    final email = widget.tappedUser['email']?.toString() ?? '';
+    
+    // Debug: Print user data to see what's available
+    print('User data: firstName=$firstName, lastName=$lastName, username=$username, email=$email');
+    
+    // Try to build full name from firstName and lastName
+    if (firstName.isNotEmpty && lastName.isNotEmpty) {
+      return '$firstName $lastName';
+    } else if (firstName.isNotEmpty) {
+      return firstName;
+    } else if (lastName.isNotEmpty) {
+      return lastName;
+    } else if (username.isNotEmpty) {
+      return username;
+    } else if (email.isNotEmpty) {
+      // Extract name from email (part before @)
+      final emailName = email.split('@').first;
+      return emailName.isNotEmpty ? emailName : 'Unknown User';
+    } else {
+      return 'Unknown User';
+    }
+  }
+
   @override
   void dispose() {
     _msgCtrl.dispose();
@@ -216,14 +243,16 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
                   ),
                 ],
               ),
-              child: Center(
-                child: CustomText(
-                  text: widget.tappedUser['firstName']?.toString().substring(0, 1).toUpperCase() ?? '?',
-                  fontSize: 14.sp,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
+                      child: Center(
+                        child: CustomText(
+                          text: _getDisplayName().isNotEmpty
+                              ? _getDisplayName().substring(0, 1).toUpperCase()
+                              : '?',
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
             ),
             SizedBox(width: 8.w),
           ],
@@ -422,10 +451,9 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final tappedUserId = (widget.tappedUser['uid'] ?? '').toString();
-    final tappedUserName = (widget.tappedUser['firstName'] ?? '').toString();
+          @override
+          Widget build(BuildContext context) {
+            final tappedUserId = (widget.tappedUser['uid'] ?? '').toString();
 
     return FutureBuilder<String>(
       future: _currentUserIdFuture,
@@ -459,8 +487,8 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
                       ? Colors.orange.shade100
                       : Colors.blue.shade100,
                   child: CustomText(
-                    text: tappedUserName.isNotEmpty
-                        ? tappedUserName.substring(0, 1).toUpperCase()
+                    text: _getDisplayName().isNotEmpty
+                        ? _getDisplayName().substring(0, 1).toUpperCase()
                         : '?',
                     fontSize: 16.sp,
                     fontWeight: FontWeight.bold,
@@ -475,7 +503,7 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       CustomText(
-                        text: '${widget.tappedUser['firstName'] ?? ''} ${widget.tappedUser['lastName'] ?? ''}'.trim(),
+                        text: _getDisplayName(),
                         fontSize: 16.sp,
                         fontWeight: FontWeight.w600,
                       ),
