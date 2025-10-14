@@ -197,17 +197,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     color: AppColors.textPrimary,
                                   ),
                                 ),
-                                SizedBox(height: screenSize.height * 0.02),
-                                
+                                SizedBox(height: screenSize.height * 0.025),
+
                                 // First Name
                                 Container(
-                                  margin: EdgeInsets.only(bottom: screenSize.height * 0.015),
+                                  margin: EdgeInsets.only(bottom: screenSize.height * 0.018),
                                   child: TextFormField(
                                     controller: _firstNameController,
                                     style: TextStyle(fontSize: screenSize.width * 0.04),
-                                    decoration: InputDecoration(
+                                    decoration: const InputDecoration(
                                       hintText: 'First name',
-                                      prefixIcon: const Icon(Icons.person_outline),
+                                      prefixIcon: Icon(
+                                        Icons.person_outline,
+                                        color: AppColors.primary,
+                                      ),
                                     ),
                                     validator: (value) {
                                       if (value == null || value.trim().isEmpty) {
@@ -217,16 +220,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     },
                                   ),
                                 ),
-                                
+
                                 // Last Name
                                 Container(
-                                  margin: EdgeInsets.only(bottom: screenSize.height * 0.015),
+                                  margin: EdgeInsets.only(bottom: screenSize.height * 0.018),
                                   child: TextFormField(
                                     controller: _lastNameController,
                                     style: TextStyle(fontSize: screenSize.width * 0.04),
-                                    decoration: InputDecoration(
+                                    decoration: const InputDecoration(
                                       hintText: 'Last name',
-                                      prefixIcon: const Icon(Icons.person_outline),
+                                      prefixIcon: Icon(
+                                        Icons.person_outline,
+                                        color: AppColors.primary,
+                                      ),
                                     ),
                                     validator: (value) {
                                       if (value == null || value.trim().isEmpty) {
@@ -236,13 +242,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     },
                                   ),
                                 ),
-                
+
                                 // Age and Gender Row
                                 Row(
                                   children: [
                                     Expanded(
                                       child: Container(
-                                        margin: EdgeInsets.only(bottom: screenSize.height * 0.015, right: 8),
+                                        margin: EdgeInsets.only(bottom: screenSize.height * 0.018, right: 8),
                                         child: NumberInput(
                                           label: 'Age',
                                           hint: 'Enter your age',
@@ -254,7 +260,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     ),
                                     Expanded(
                                       child: Container(
-                                        margin: EdgeInsets.only(bottom: screenSize.height * 0.015, left: 8),
+                                        margin: EdgeInsets.only(bottom: screenSize.height * 0.018, left: 8),
                                         child: DropdownInput<String>(
                                           label: 'Gender',
                                           hint: 'Select your gender',
@@ -293,11 +299,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     color: AppColors.textPrimary,
                                   ),
                                 ),
-                                SizedBox(height: screenSize.height * 0.02),
-                                
+                                SizedBox(height: screenSize.height * 0.025),
+
                                 // Phone Number
                                 Container(
-                                  margin: EdgeInsets.only(bottom: screenSize.height * 0.015),
+                                  margin: EdgeInsets.only(bottom: screenSize.height * 0.018),
                                   child: PhoneInput(
                                     label: 'Contact Number',
                                     hint: 'Enter your phone number',
@@ -307,7 +313,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 
                                 // Email
                                 Container(
-                                  margin: EdgeInsets.only(bottom: screenSize.height * 0.015),
+                                  margin: EdgeInsets.only(bottom: screenSize.height * 0.018),
                                   child: EmailInput(
                                     label: 'Email',
                                     hint: 'Email address',
@@ -317,15 +323,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 
                                 // Address
                                 Container(
-                                  margin: EdgeInsets.only(bottom: screenSize.height * 0.015),
+                                  margin: EdgeInsets.only(bottom: screenSize.height * 0.018),
                                   child: TextFormField(
                                     controller: _addressController,
                                     maxLines: 3,
                                     style: TextStyle(fontSize: screenSize.width * 0.04),
-                                    decoration: InputDecoration(
+                                    decoration: const InputDecoration(
                                       hintText: 'Address',
-                                      prefixIcon: const Icon(
+                                      prefixIcon: Icon(
                                         Icons.location_on_outlined,
+                                        color: AppColors.primary,
                                       ),
                                       alignLabelWithHint: true,
                                     ),
@@ -355,18 +362,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     color: AppColors.textPrimary,
                                   ),
                                 ),
-                                SizedBox(height: screenSize.height * 0.02),
-                                
+                                SizedBox(height: screenSize.height * 0.025),
+
                                 // Username
                                 Container(
-                                  margin: EdgeInsets.only(bottom: screenSize.height * 0.015),
+                                  margin: EdgeInsets.only(bottom: screenSize.height * 0.018),
                                   child: TextFormField(
                                     controller: _usernameController,
                                     style: TextStyle(fontSize: screenSize.width * 0.04),
-                                    decoration: InputDecoration(
+                                    decoration: const InputDecoration(
                                       hintText: 'Username',
-                                      prefixIcon: const Icon(
+                                      prefixIcon: Icon(
                                         Icons.account_circle_outlined,
+                                        color: AppColors.primary,
                                       ),
                                     ),
                                     validator: (value) {
@@ -380,7 +388,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 
                                 // Password
                                 Container(
-                                  margin: EdgeInsets.only(bottom: screenSize.height * 0.03),
+                                  margin: EdgeInsets.only(bottom: screenSize.height * 0.018),
                                   child: EnhancedPasswordInput(
                                     label: 'Password',
                                     hint: 'Enter a strong password',
@@ -391,16 +399,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               ],
                             ),
                           ),
-                          
+
+                          SizedBox(height: screenSize.height * 0.03),
+
                           // MongoDB Sign Up Button
                           SizedBox(
                             width: double.infinity,
-                            height: screenSize.height * 0.065,
+                            height: UIConstants.buttonHeightL,
                             child: ElevatedButton(
                               onPressed: _isLoading ? null : _handleMongoDBSignUp,
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: AppColors.primary,
                                 foregroundColor: AppColors.white,
+                                elevation: 2,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(UIConstants.radiusL),
                                 ),
@@ -417,22 +428,25 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   : Text(
                                       'Create Account',
                                       style: TextStyle(
-                                        fontSize: screenSize.width * 0.04,
+                                        fontSize: screenSize.width * 0.042,
                                         fontWeight: FontWeight.w700,
                                         color: AppColors.white,
+                                        letterSpacing: 0.5,
                                       ),
                                     ),
                             ),
                           ),
 
+                          SizedBox(height: screenSize.height * 0.018),
+
                           // Firebase Sign Up Button
                           SizedBox(
                             width: double.infinity,
-                            height: screenSize.height * 0.065,
+                            height: UIConstants.buttonHeightL,
                             child: OutlinedButton(
                               onPressed: _isLoading ? null : _handleFirebaseSignUp,
                               style: OutlinedButton.styleFrom(
-                                side: BorderSide(color: AppColors.primaryDark, width: 1.5),
+                                side: const BorderSide(color: AppColors.primaryDark, width: 2),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(UIConstants.radiusL),
                                 ),
@@ -449,26 +463,33 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   : Text(
                                       'Continue with Firebase',
                                       style: TextStyle(
-                                        fontSize: screenSize.width * 0.04,
+                                        fontSize: screenSize.width * 0.042,
                                         fontWeight: FontWeight.w600,
                                         color: AppColors.primaryDark,
+                                        letterSpacing: 0.5,
                                       ),
                                     ),
                             ),
                           ),
 
-                          const SizedBox(height: UIConstants.spacingS),
+                          SizedBox(height: screenSize.height * 0.02),
 
                           // Helpful note
-                          Text(
-                            'Choose your preferred authentication method above.',
-                            style: TextStyle(
-                              fontSize: screenSize.width * 0.03,
-                              color: AppColors.textSecondary,
-                              fontStyle: FontStyle.italic,
+                          Padding(
+                            padding: EdgeInsets.symmetric(horizontal: screenSize.width * 0.04),
+                            child: Text(
+                              'Choose your preferred authentication method above.',
+                              style: TextStyle(
+                                fontSize: screenSize.width * 0.032,
+                                color: AppColors.textSecondary,
+                                fontStyle: FontStyle.italic,
+                                height: 1.3,
+                              ),
+                              textAlign: TextAlign.center,
                             ),
-                            textAlign: TextAlign.center,
                           ),
+
+                          SizedBox(height: screenSize.height * 0.01),
 
                           // Login Link
                           TextButton(
@@ -476,7 +497,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               Navigator.pop(context);
                             },
                             style: TextButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: UIConstants.spacingS),
+                              padding: EdgeInsets.symmetric(
+                                vertical: screenSize.height * 0.015,
+                                horizontal: screenSize.width * 0.04,
+                              ),
                             ),
                             child: RichText(
                               text: TextSpan(

@@ -151,9 +151,12 @@ class _LoginScreenState extends State<LoginScreen> {
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
                         style: AppTextStyles.bodyLarge,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           hintText: 'Email or phone number',
-                          prefixIcon: const Icon(Icons.email_outlined),
+                          prefixIcon: Icon(
+                            Icons.email_outlined,
+                            color: AppColors.primary,
+                          ),
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -173,7 +176,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         style: AppTextStyles.bodyLarge,
                         decoration: InputDecoration(
                           hintText: 'Password',
-                          prefixIcon: const Icon(Icons.lock_outline),
+                          prefixIcon: const Icon(
+                            Icons.lock_outline,
+                            color: AppColors.primary,
+                          ),
                           suffixIcon: IconButton(
                             icon: Icon(
                               _isObscure ? Icons.visibility_outlined : Icons.visibility_off_outlined,
