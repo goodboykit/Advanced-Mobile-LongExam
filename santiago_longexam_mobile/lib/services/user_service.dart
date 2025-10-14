@@ -169,6 +169,11 @@ class UserService {
     required String password,
     String? firstName,
     String? lastName,
+    int? age,
+    String? gender,
+    String? contactNumber,
+    String? address,
+    String? username,
   }) async {
     // Create Firebase Auth user
     UserCredential userCredential = await firebaseAuth.createUserWithEmailAndPassword(
@@ -176,12 +181,19 @@ class UserService {
       password: password,
     );
 
-    // Create Firestore user document
+    // Create Firestore user document with all fields
     await firestore.collection('Users').doc(userCredential.user!.uid).set({
       'uid': userCredential.user!.uid,
       'email': email,
       'firstName': firstName ?? '',
       'lastName': lastName ?? '',
+      'age': age ?? 0,
+      'gender': gender ?? '',
+      'contactNumber': contactNumber ?? '',
+      'address': address ?? '',
+      'username': username ?? '',
+      'createdAt': FieldValue.serverTimestamp(),
+      'isActive': true,
     });
 
     return userCredential;
@@ -228,6 +240,24 @@ class UserService {
   /// **Send Password Reset Email**
   Future<void> sendPasswordResetEmail({required String email}) async {
     await firebaseAuth.sendPasswordResetEmail(email: email);
+  }
+
+  /// **Get Firebase User Data from Firestore**
+  Future<Map<String, dynamic>> getFirebaseUserData() async {
+    if (currentUser == null) {
+      return {};
+    }
+
+    try {
+      final doc = await firestore.collection('Users').doc(currentUser!.uid).get();
+      if (doc.exists) {
+        return doc.data() ?? {};
+      }
+      return {};
+    } catch (e) {
+      debugPrint('Error getting Firestore user data: $e');
+      return {};
+    }
   }
 
   /// **Create Firestore Document for Current Firebase User** (for existing users)

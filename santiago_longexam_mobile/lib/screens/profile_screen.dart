@@ -13,6 +13,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   Map<String, dynamic> userData = {};
+  Map<String, dynamic> firebaseUserData = {};
   User? firebaseUser;
   bool isLoading = true;
   String loginType = 'Unknown';
@@ -36,8 +37,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
       // Check Firebase user
       final firebaseUser = userService.currentUser;
 
+      // Get Firebase Firestore user data
+      final firebaseData = await userService.getFirebaseUserData();
+
       setState(() {
         userData = mongoData;
+        firebaseUserData = firebaseData;
         this.firebaseUser = firebaseUser;
         loginType = loginTypeResult;
         isLoading = false;
@@ -175,37 +180,95 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                         // User Info Cards based on login type
                         if (loginType == 'Firebase' && firebaseUser != null) ...[
+                          // Personal Information
+                          _buildInfoCard(
+                            context,
+                            'First Name',
+                            firebaseUserData['firstName'] ?? 'N/A',
+                            Icons.person_outline,
+                          ),
+                          _buildInfoCard(
+                            context,
+                            'Last Name',
+                            firebaseUserData['lastName'] ?? 'N/A',
+                            Icons.person_outline,
+                          ),
+                          _buildInfoCard(
+                            context,
+                            'Username',
+                            firebaseUserData['username'] ?? firebaseUser!.displayName ?? 'N/A',
+                            Icons.account_circle_outlined,
+                          ),
+                          if (firebaseUserData['age'] != null && firebaseUserData['age'] != 0)
+                            _buildInfoCard(
+                              context,
+                              'Age',
+                              firebaseUserData['age']?.toString() ?? 'N/A',
+                              Icons.cake_outlined,
+                            ),
+                          if (firebaseUserData['gender'] != null && firebaseUserData['gender'].toString().isNotEmpty)
+                            _buildInfoCard(
+                              context,
+                              'Gender',
+                              firebaseUserData['gender'] ?? 'N/A',
+                              Icons.wc_outlined,
+                            ),
+
+                          // Contact Information
                           _buildInfoCard(
                             context,
                             'Email',
                             firebaseUser!.email ?? 'N/A',
                             Icons.email_outlined,
                           ),
+                          if (firebaseUserData['contactNumber'] != null && firebaseUserData['contactNumber'].toString().isNotEmpty)
+                            _buildInfoCard(
+                              context,
+                              'Contact Number',
+                              firebaseUserData['contactNumber'] ?? 'N/A',
+                              Icons.phone_outlined,
+                            ),
+                          if (firebaseUserData['address'] != null && firebaseUserData['address'].toString().isNotEmpty)
+                            _buildInfoCard(
+                              context,
+                              'Address',
+                              firebaseUserData['address'] ?? 'N/A',
+                              Icons.location_on_outlined,
+                            ),
+                        ] else if (loginType == 'MongoDB') ...[
+                          // Personal Information
                           _buildInfoCard(
                             context,
-                            'Display Name',
-                            firebaseUser!.displayName ?? 'N/A',
+                            'First Name',
+                            userData['firstName'] ?? 'N/A',
                             Icons.person_outline,
                           ),
                           _buildInfoCard(
                             context,
-                            'User ID',
-                            firebaseUser!.uid,
-                            Icons.fingerprint,
+                            'Last Name',
+                            userData['lastName'] ?? 'N/A',
+                            Icons.person_outline,
                           ),
                           _buildInfoCard(
                             context,
-                            'Email Verified',
-                            firebaseUser!.emailVerified ? 'Yes' : 'No',
-                            Icons.verified_outlined,
+                            'Username',
+                            userData['username'] ?? 'N/A',
+                            Icons.account_circle_outlined,
                           ),
                           _buildInfoCard(
                             context,
-                            'Created',
-                            _formatDate(firebaseUser!.metadata.creationTime),
-                            Icons.calendar_today_outlined,
+                            'Age',
+                            userData['age']?.toString() ?? 'N/A',
+                            Icons.cake_outlined,
                           ),
-                        ] else if (loginType == 'MongoDB') ...[
+                          _buildInfoCard(
+                            context,
+                            'Gender',
+                            userData['gender'] ?? 'N/A',
+                            Icons.wc_outlined,
+                          ),
+
+                          // Contact Information
                           _buildInfoCard(
                             context,
                             'Email',
@@ -214,27 +277,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                           _buildInfoCard(
                             context,
-                            'Display Name',
-                            userData['username'] ?? 'N/A',
-                            Icons.person_outline,
+                            'Contact Number',
+                            userData['contactNumber'] ?? 'N/A',
+                            Icons.phone_outlined,
                           ),
                           _buildInfoCard(
                             context,
-                            'User ID',
-                            userData['_id'] ?? 'N/A',
-                            Icons.fingerprint,
-                          ),
-                          _buildInfoCard(
-                            context,
-                            'Email Verified',
-                            'No',
-                            Icons.verified_outlined,
-                          ),
-                          _buildInfoCard(
-                            context,
-                            'Created',
-                            _formatDate(DateTime.tryParse(userData['createdAt'] ?? '')),
-                            Icons.calendar_today_outlined,
+                            'Address',
+                            userData['address'] ?? 'N/A',
+                            Icons.location_on_outlined,
                           ),
                         ] else ...[
                           _buildInfoCard(
@@ -325,11 +376,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ],
             ),
     );
-  }
-
-  String _formatDate(DateTime? dateTime) {
-    if (dateTime == null) return 'N/A';
-    return '${dateTime.year}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.day.toString().padLeft(2, '0')}';
   }
 
   Widget _buildInfoCard(

@@ -104,6 +104,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
         password: _passwordController.text.trim(),
         firstName: _firstNameController.text.trim(),
         lastName: _lastNameController.text.trim(),
+        age: int.tryParse(_ageController.text.trim()),
+        gender: _selectedGender,
+        contactNumber: _contactController.text.trim(),
+        address: _addressController.text.trim(),
+        username: _usernameController.text.trim(),
       );
 
       // Update display name with the username
