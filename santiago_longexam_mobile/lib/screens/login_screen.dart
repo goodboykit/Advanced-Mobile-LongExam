@@ -73,7 +73,7 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     try {
-      final userCredential = await _userService.signIn(
+      await _userService.signIn(
         email: _emailController.text,
         password: _passwordController.text,
       );
@@ -106,37 +106,41 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: AppGradients.primaryGradient,
-        ),
-        child: SafeArea(
-          child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(UIConstants.spacingL),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: AppColors.surface,
-                  borderRadius: BorderRadius.circular(UIConstants.radiusXL),
-                  boxShadow: const [AppShadows.medium],
-                ),
-                padding: const EdgeInsets.all(UIConstants.spacingXL),
-                child: Form(
+      backgroundColor: AppColors.background,
+      appBar: AppBar(
+        title: const Text('Login'),
+        centerTitle: true,
+      ),
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(
+              horizontal: UIConstants.spacingL,
+              vertical: UIConstants.spacingL,
+            ),
+            child: Container(
+              constraints: const BoxConstraints(maxWidth: 480),
+              decoration: BoxDecoration(
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(UIConstants.radiusXL),
+                boxShadow: const [AppShadows.medium],
+              ),
+              padding: const EdgeInsets.all(UIConstants.spacingXL),
+              child: Form(
                   key: _formKey,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Text(
-                        'Welcome Back',
-                        style: AppTextStyles.heading1.copyWith(
-                          color: AppColors.textPrimary,
-                        ),
+                      Icon(Icons.login, color: AppColors.primary, size: UIConstants.iconXL),
+                      const SizedBox(height: UIConstants.spacingS),
+                      Text('Welcome Back',
+                        style: AppTextStyles.heading2.copyWith(color: AppColors.primary, fontWeight: FontWeight.w800),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: UIConstants.spacingS),
                       Text(
-                        'Sign in to your account',
+                        'Log in to your account',
                         style: AppTextStyles.bodyMedium.copyWith(
                           color: AppColors.textSecondary,
                         ),
@@ -148,23 +152,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         keyboardType: TextInputType.emailAddress,
                         style: AppTextStyles.bodyLarge,
                         decoration: InputDecoration(
-                          labelText: 'Email',
-                          labelStyle: TextStyle(color: AppColors.textSecondary),
-                          prefixIcon: Icon(Icons.email_outlined, color: AppColors.primary),
-                          filled: true,
-                          fillColor: AppColors.grey50,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(UIConstants.radiusL),
-                            borderSide: BorderSide.none,
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(UIConstants.radiusL),
-                            borderSide: BorderSide(color: AppColors.primary, width: 2),
-                          ),
-                          errorBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(UIConstants.radiusL),
-                            borderSide: BorderSide(color: AppColors.error, width: 2),
-                          ),
+                          hintText: 'Email or phone number',
+                          prefixIcon: const Icon(Icons.email_outlined),
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -183,9 +172,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         obscureText: _isObscure,
                         style: AppTextStyles.bodyLarge,
                         decoration: InputDecoration(
-                          labelText: 'Password',
-                          labelStyle: TextStyle(color: AppColors.textSecondary),
-                          prefixIcon: Icon(Icons.lock_outline, color: AppColors.primary),
+                          hintText: 'Password',
+                          prefixIcon: const Icon(Icons.lock_outline),
                           suffixIcon: IconButton(
                             icon: Icon(
                               _isObscure ? Icons.visibility_outlined : Icons.visibility_off_outlined,
@@ -221,19 +209,14 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       const SizedBox(height: UIConstants.spacingXL),
                       
-                      // MongoDB Login Button
-                      Container(
-                        decoration: BoxDecoration(
-                          gradient: AppGradients.primaryGradient,
-                          borderRadius: BorderRadius.circular(UIConstants.radiusL),
-                          boxShadow: const [AppShadows.soft],
-                        ),
+                      // Primary Login Button (MongoDB)
+                      SizedBox(
+                        height: UIConstants.buttonHeightL,
                         child: ElevatedButton(
                           onPressed: _isLoading ? null : _handleMongoDBLogin,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.transparent,
-                            shadowColor: Colors.transparent,
-                            padding: const EdgeInsets.symmetric(vertical: UIConstants.spacingM),
+                            backgroundColor: AppColors.primary,
+                            foregroundColor: AppColors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(UIConstants.radiusL),
                             ),
@@ -247,30 +230,19 @@ class _LoginScreenState extends State<LoginScreen> {
                                     valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
                                   ),
                                 )
-                              : Text(
-                                  'Log In (MongoDB)',
-                                  style: AppTextStyles.button.copyWith(
-                                    color: AppColors.white,
-                                  ),
-                                ),
+                              : const Text('Log In'),
                         ),
                       ),
                       
                       const SizedBox(height: UIConstants.spacingM),
                       
-                      // Firebase Login Button
-                      Container(
-                        decoration: BoxDecoration(
-                          color: AppColors.secondary,
-                          borderRadius: BorderRadius.circular(UIConstants.radiusL),
-                          boxShadow: const [AppShadows.soft],
-                        ),
-                        child: ElevatedButton(
+                      // Secondary Login Button (Firebase)
+                      SizedBox(
+                        height: UIConstants.buttonHeightL,
+                        child: OutlinedButton(
                           onPressed: _isLoading ? null : _handleFirebaseLogin,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.transparent,
-                            shadowColor: Colors.transparent,
-                            padding: const EdgeInsets.symmetric(vertical: UIConstants.spacingM),
+                          style: OutlinedButton.styleFrom(
+                            side: BorderSide(color: AppColors.primaryDark, width: 1.5),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(UIConstants.radiusL),
                             ),
@@ -281,15 +253,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                   width: 20,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
+                                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
                                   ),
                                 )
-                              : Text(
-                                  'Log In (Firebase)',
-                                  style: AppTextStyles.button.copyWith(
-                                    color: AppColors.white,
-                                  ),
-                                ),
+                              : Text('Continue with Firebase', style: AppTextStyles.button.copyWith(color: AppColors.primaryDark)),
                         ),
                       ),
 
@@ -324,7 +291,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               TextSpan(
                                 text: 'Sign Up',
                                 style: AppTextStyles.bodyMedium.copyWith(
-                                  color: AppColors.primary,
+                                  color: AppColors.primaryDark,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -339,7 +306,6 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
         ),
-      ),
     );
   }
 }

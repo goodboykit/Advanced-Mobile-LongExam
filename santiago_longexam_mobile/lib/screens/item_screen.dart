@@ -91,8 +91,17 @@ class _ItemScreenState extends State<ItemScreen> {
                 };
 
                 final res = await _svc.createItem(payload);
-                final created = (res['item'] ?? res);
-                final newItem = Item.fromJson(created);
+
+                // Handle both Firebase (returns ItemModel) and MongoDB (returns Map)
+                final Item newItem;
+                if (res is ItemModel) {
+                  // Firebase returns ItemModel directly
+                  newItem = res.toItem();
+                } else {
+                  // MongoDB returns Map
+                  final created = (res['item'] ?? res);
+                  newItem = Item.fromJson(created);
+                }
 
                 setState(() => _items.insert(0, newItem));
 
@@ -112,6 +121,79 @@ class _ItemScreenState extends State<ItemScreen> {
               }
             }
 
+            // Helper to build image preview
+            Widget buildImagePreview() {
+              final url = photoCtrl.text.trim();
+              if (url.isEmpty) {
+                return Container(
+                  height: 140.h,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade200,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.grey.shade300),
+                  ),
+                  alignment: Alignment.center,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.image_outlined, size: 48, color: Colors.grey.shade400),
+                      SizedBox(height: 8.h),
+                      Text(
+                        'No image',
+                        style: TextStyle(color: Colors.grey.shade600, fontSize: 12.sp),
+                      ),
+                    ],
+                  ),
+                );
+              }
+
+              // Normalize URL
+              String normalizedUrl = url;
+              if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                normalizedUrl = 'https://$url';
+              }
+
+              return ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: CachedNetworkImage(
+                  imageUrl: normalizedUrl,
+                  height: 140.h,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) => Container(
+                    height: 140.h,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade200,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.grey.shade300),
+                    ),
+                    alignment: Alignment.center,
+                    child: const CircularProgressIndicator(),
+                  ),
+                  errorWidget: (context, url, error) => Container(
+                    height: 140.h,
+                    decoration: BoxDecoration(
+                      color: Colors.red.shade50,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.red.shade200),
+                    ),
+                    alignment: Alignment.center,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.broken_image_outlined, size: 48, color: Colors.red.shade300),
+                        SizedBox(height: 8.h),
+                        Text(
+                          'Invalid URL',
+                          style: TextStyle(color: Colors.red.shade600, fontSize: 12.sp),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }
+
             return AlertDialog(
               title: Row(
                 children: [
@@ -127,13 +209,28 @@ class _ItemScreenState extends State<ItemScreen> {
               ),
               content: SizedBox(
                 width: MediaQuery.of(ctx).size.width * 0.9,
-                height: MediaQuery.of(ctx).size.height * 0.6,
+                height: MediaQuery.of(ctx).size.height * 0.7,
                 child: Form(
                   key: formKey,
                   child: SingleChildScrollView(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // Image Preview
+                        buildImagePreview(),
+                        SizedBox(height: 12.h),
+
+                        // Photo URL Input
+                        URLInput(
+                          label: 'Photo URL',
+                          hint: 'Enter image URL (optional)',
+                          controller: photoCtrl,
+                          isRequired: false,
+                          onChanged: (_) => setLocal(() {}), // Refresh preview
+                        ),
+                        SizedBox(height: 10.h),
+
+                        // Name Input
                         TextFormField(
                         controller: nameCtrl,
                         decoration: const InputDecoration(
@@ -143,6 +240,8 @@ class _ItemScreenState extends State<ItemScreen> {
                         validator: _req,
                       ),
                       SizedBox(height: 10.h),
+
+                      // Description Input
                       TextFormField(
                         controller: descCtrl,
                         minLines: 2,
@@ -155,13 +254,6 @@ class _ItemScreenState extends State<ItemScreen> {
                         validator: (v) => _parseDesc(v ?? '').isEmpty
                             ? 'Add at least one line'
                             : null,
-                      ),
-                      SizedBox(height: 10.h),
-                      URLInput(
-                        label: 'Photo URL',
-                        hint: 'Enter image URL (optional)',
-                        controller: photoCtrl,
-                        isRequired: false,
                       ),
                       SizedBox(height: 10.h),
                       Row(
@@ -244,7 +336,7 @@ class _ItemScreenState extends State<ItemScreen> {
   Widget _leadingThumb(Item item) {
     final url = item.photoUrl.trim();
     const double imageSize = 56.0; // Fixed size instead of responsive
-    
+
     if (url.isEmpty) {
       return Container(
         width: imageSize,
@@ -252,14 +344,25 @@ class _ItemScreenState extends State<ItemScreen> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
           border: Border.all(color: Colors.grey.shade300),
+          color: Colors.grey.shade100,
         ),
-        child: const Icon(Icons.inventory_2_outlined),
+        child: Icon(
+          Icons.inventory_2_outlined,
+          color: Colors.grey.shade600,
+        ),
       );
     }
+
+    // Normalize URL - ensure it has http:// or https://
+    String normalizedUrl = url;
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+      normalizedUrl = 'https://$url';
+    }
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(8),
       child: CachedNetworkImage(
-        imageUrl: url,
+        imageUrl: normalizedUrl,
         width: imageSize,
         height: imageSize,
         fit: BoxFit.cover,
@@ -269,6 +372,7 @@ class _ItemScreenState extends State<ItemScreen> {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
             border: Border.all(color: Colors.grey.shade300),
+            color: Colors.grey.shade100,
           ),
           child: const Center(
             child: CircularProgressIndicator(strokeWidth: 2),
@@ -279,9 +383,14 @@ class _ItemScreenState extends State<ItemScreen> {
           height: imageSize,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: Colors.grey.shade300),
+            border: Border.all(color: Colors.red.shade200),
+            color: Colors.red.shade50,
           ),
-          child: const Icon(Icons.broken_image_outlined),
+          child: Icon(
+            Icons.broken_image_outlined,
+            color: Colors.red.shade400,
+            size: 24,
+          ),
         ),
       ),
     );

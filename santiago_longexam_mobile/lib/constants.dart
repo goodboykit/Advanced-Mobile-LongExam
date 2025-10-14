@@ -49,20 +49,20 @@ class UIConstants {
 
 // Colors
 class AppColors {
-  // Primary Colors - Modern gradient-inspired purple
-  static const Color primary = Color(0xFF6366F1);
-  static const Color primaryLight = Color(0xFF818CF8);
-  static const Color primaryDark = Color(0xFF4F46E5);
+  // Primary Colors - Facebook-like blues
+  static const Color primary = Color(0xFF1877F2); // Facebook Blue
+  static const Color primaryLight = Color(0xFF3B88F5);
+  static const Color primaryDark = Color(0xFF166FE5);
   
-  // Secondary Colors - Complementary teal
-  static const Color secondary = Color(0xFF06B6D4);
-  static const Color secondaryLight = Color(0xFF67E8F9);
-  static const Color secondaryDark = Color(0xFF0891B2);
+  // Secondary Colors - supporting blue/teal accents (muted)
+  static const Color secondary = Color(0xFF00A7FF);
+  static const Color secondaryLight = Color(0xFF5AC8FF);
+  static const Color secondaryDark = Color(0xFF0086CC);
   
-  // Accent Colors
-  static const Color accent = Color(0xFFEC4899);
-  static const Color accentLight = Color(0xFFF472B6);
-  static const Color accentDark = Color(0xFFDB2777);
+  // Accent Colors - subtle green for success actions similar to Messenger accents
+  static const Color accent = Color(0xFF00C553);
+  static const Color accentLight = Color(0xFF39D57B);
+  static const Color accentDark = Color(0xFF00A245);
   
   // Status Colors
   static const Color success = Color(0xFF10B981);
@@ -89,9 +89,9 @@ class AppColors {
   static const Color grey900 = Color(0xFF111827);
   
   // Background Colors
-  static const Color background = Color(0xFFFAFAFA);
+  static const Color background = Color(0xFFF0F2F5); // FB light gray background
   static const Color surface = Color(0xFFFFFFFF);
-  static const Color surfaceVariant = Color(0xFFF8FAFC);
+  static const Color surfaceVariant = Color(0xFFF5F6F7);
   
   // Text Colors
   static const Color textPrimary = Color(0xFF1F2937);
@@ -106,57 +106,66 @@ class AppTextStyles {
     fontSize: 32,
     fontWeight: FontWeight.bold,
     letterSpacing: -0.5,
+    inherit: true,
   );
-  
+
   static const TextStyle heading2 = TextStyle(
     fontSize: 24,
     fontWeight: FontWeight.w600,
     letterSpacing: -0.3,
+    inherit: true,
   );
-  
+
   static const TextStyle heading3 = TextStyle(
     fontSize: 20,
     fontWeight: FontWeight.w600,
     letterSpacing: -0.2,
+    inherit: true,
   );
-  
+
   static const TextStyle heading4 = TextStyle(
     fontSize: 18,
     fontWeight: FontWeight.w500,
     letterSpacing: -0.1,
+    inherit: true,
   );
-  
+
   // Body Text
   static const TextStyle bodyLarge = TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.normal,
     height: 1.5,
+    inherit: true,
   );
-  
+
   static const TextStyle bodyMedium = TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.normal,
     height: 1.4,
+    inherit: true,
   );
-  
+
   static const TextStyle bodySmall = TextStyle(
     fontSize: 12,
     fontWeight: FontWeight.normal,
     height: 1.3,
+    inherit: true,
   );
-  
+
   // Button Text
   static const TextStyle button = TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.w600,
     letterSpacing: 0.5,
+    inherit: true,
   );
-  
+
   // Caption
   static const TextStyle caption = TextStyle(
     fontSize: 12,
     fontWeight: FontWeight.w400,
     height: 1.2,
+    inherit: true,
   );
 }
 
@@ -169,27 +178,28 @@ class AssetPaths {
 // Gradients
 class AppGradients {
   static const LinearGradient primaryGradient = LinearGradient(
+    // Keep a very subtle vertical shift within the same hue to mimic solid FB bar
     colors: [AppColors.primary, AppColors.primaryDark],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
   );
   
   static const LinearGradient secondaryGradient = LinearGradient(
     colors: [AppColors.secondary, AppColors.secondaryDark],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
   );
   
   static const LinearGradient accentGradient = LinearGradient(
     colors: [AppColors.accent, AppColors.accentDark],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
   );
   
   static const LinearGradient successGradient = LinearGradient(
     colors: [AppColors.success, AppColors.successLight],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
   );
 }
 

@@ -89,8 +89,17 @@ class _DetailScreenState extends State<DetailScreen> {
     setState(() => _isSaving = true);
     try {
       final res = await _svc.updateItem(_item.uid, payload);
-      final updated = (res['item'] ?? res);
-      final updatedItem = Item.fromJson(updated);
+
+      // Handle both Firebase (returns ItemModel) and MongoDB (returns Map)
+      final Item updatedItem;
+      if (res is ItemModel) {
+        // Firebase returns ItemModel directly
+        updatedItem = res.toItem();
+      } else {
+        // MongoDB returns Map
+        final updated = (res['item'] ?? res);
+        updatedItem = Item.fromJson(updated);
+      }
 
       setState(() => _item = updatedItem);
 
@@ -101,7 +110,7 @@ class _DetailScreenState extends State<DetailScreen> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Failed to update: \$e')));
+          .showSnackBar(SnackBar(content: Text('Failed to update: $e')));
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }
@@ -137,7 +146,7 @@ class _DetailScreenState extends State<DetailScreen> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Failed to delete: \$e')));
+          .showSnackBar(SnackBar(content: Text('Failed to delete: $e')));
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }
@@ -154,13 +163,30 @@ class _DetailScreenState extends State<DetailScreen> {
           border: Border.all(color: Colors.grey.shade300),
         ),
         alignment: Alignment.center,
-        child: const Icon(Icons.inventory_2_outlined, size: 48),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.image_outlined, size: 48, color: Colors.grey.shade400),
+            SizedBox(height: 8.h),
+            Text(
+              'No image',
+              style: TextStyle(color: Colors.grey.shade600, fontSize: 12.sp),
+            ),
+          ],
+        ),
       );
     }
+
+    // Normalize URL - ensure it has http:// or https://
+    String normalizedUrl = url;
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+      normalizedUrl = 'https://$url';
+    }
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
       child: CachedNetworkImage(
-        imageUrl: url,
+        imageUrl: normalizedUrl,
         height: 160.h,
         width: double.infinity,
         fit: BoxFit.cover,
@@ -177,12 +203,22 @@ class _DetailScreenState extends State<DetailScreen> {
         errorWidget: (context, url, error) => Container(
           height: 160.h,
           decoration: BoxDecoration(
-            color: Colors.grey.shade200,
+            color: Colors.red.shade50,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey.shade300),
+            border: Border.all(color: Colors.red.shade200),
           ),
           alignment: Alignment.center,
-          child: const Icon(Icons.broken_image_outlined, size: 48),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.broken_image_outlined, size: 48, color: Colors.red.shade300),
+              SizedBox(height: 8.h),
+              Text(
+                'Invalid URL',
+                style: TextStyle(color: Colors.red.shade600, fontSize: 12.sp),
+              ),
+            ],
+          ),
         ),
       ),
     );

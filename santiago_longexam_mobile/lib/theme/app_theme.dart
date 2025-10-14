@@ -28,12 +28,12 @@ class AppTheme {
       // App Bar Theme
       appBarTheme: AppBarTheme(
         elevation: 0,
-        scrolledUnderElevation: 2,
-        backgroundColor: Colors.transparent,
+        scrolledUnderElevation: 0,
+        backgroundColor: AppColors.primary,
         foregroundColor: AppColors.white,
         titleTextStyle: AppTextStyles.heading3.copyWith(
           color: AppColors.white,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w700,
         ),
         systemOverlayStyle: const SystemUiOverlayStyle(
           statusBarBrightness: Brightness.dark,
@@ -104,7 +104,7 @@ class AppTheme {
       // Input Theme
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.grey50,
+        fillColor: AppColors.grey100,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(UIConstants.radiusL),
           borderSide: BorderSide.none,
@@ -115,7 +115,7 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(UIConstants.radiusL),
-          borderSide: BorderSide(color: AppColors.primary, width: 2),
+          borderSide: BorderSide(color: AppColors.primaryDark, width: 2),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(UIConstants.radiusL),
@@ -159,7 +159,7 @@ class AppTheme {
       bottomNavigationBarTheme: BottomNavigationBarThemeData(
         backgroundColor: AppColors.surface,
         selectedItemColor: AppColors.primary,
-        unselectedItemColor: AppColors.textSecondary,
+        unselectedItemColor: AppColors.grey500,
         elevation: UIConstants.elevationM,
         type: BottomNavigationBarType.fixed,
         selectedLabelStyle: AppTextStyles.caption.copyWith(
@@ -252,12 +252,12 @@ class AppTheme {
       // App Bar Theme
       appBarTheme: AppBarTheme(
         elevation: 0,
-        scrolledUnderElevation: 2,
-        backgroundColor: Colors.transparent,
+        scrolledUnderElevation: 0,
+        backgroundColor: AppColors.grey800,
         foregroundColor: AppColors.white,
         titleTextStyle: AppTextStyles.heading3.copyWith(
           color: AppColors.white,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w700,
         ),
         systemOverlayStyle: const SystemUiOverlayStyle(
           statusBarBrightness: Brightness.light,

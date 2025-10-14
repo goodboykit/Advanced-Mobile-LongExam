@@ -5,6 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'firebase_options.dart';
 
 import 'providers/theme_provider.dart';
@@ -24,9 +25,20 @@ void main() async {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
+
+    // Enable Firestore offline persistence for better performance
+    // This allows the app to work offline and sync when online
+    FirebaseFirestore.instance.settings = const Settings(
+      persistenceEnabled: true,
+      cacheSizeBytes: Settings.CACHE_SIZE_UNLIMITED,
+    );
+
+    if (kDebugMode) {
+      print('✅ Firebase initialized successfully with offline persistence');
+    }
   } catch (e) {
     if (kDebugMode) {
-      print('Firebase initialization failed: $e');
+      print('❌ Firebase initialization failed: $e');
     }
     // Continue without Firebase if initialization fails
   }

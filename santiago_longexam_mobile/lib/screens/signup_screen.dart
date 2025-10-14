@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../services/user_service.dart';
 import '../widgets/custom_input.dart';
 import '../constants.dart';
@@ -100,7 +99,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     });
 
     try {
-      final userCredential = await _userService.createAccount(
+      await _userService.createAccount(
         email: _emailController.text.trim(),
         password: _passwordController.text.trim(),
         firstName: _firstNameController.text.trim(),
@@ -140,14 +139,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
     final screenSize = MediaQuery.of(context).size;
     
     return Scaffold(
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: AppGradients.primaryGradient,
-        ),
-        child: SafeArea(
-          child: SingleChildScrollView(
+      backgroundColor: AppColors.background,
+      appBar: AppBar(
+        title: const Text('Create account'),
+        centerTitle: true,
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
             padding: EdgeInsets.symmetric(
               horizontal: screenSize.width * 0.05,
               vertical: screenSize.height * 0.02,
@@ -155,56 +153,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
             child: Column(
               children: [
                 // Header Section
-                Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.symmetric(vertical: screenSize.height * 0.03),
-                  child: Column(
-                    children: [
-                      // Back Button
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: AppColors.white.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(UIConstants.radiusL),
-                          ),
-                          child: IconButton(
-                            icon: const Icon(
-                              Icons.arrow_back_ios_new,
-                              color: AppColors.white,
-                            ),
-                            onPressed: () => Navigator.pop(context),
-                          ),
-                        ),
-                      ),
-                      
-                      SizedBox(height: screenSize.height * 0.02),
-                      
-                      // Title Section
-                      Text(
-                        'Create Account',
-                        style: TextStyle(
-                          fontSize: screenSize.width * 0.08,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.white,
-                          letterSpacing: 1.5,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      
-                      SizedBox(height: screenSize.height * 0.01),
-                      
-                      Text(
-                        'Join us and start your journey',
-                        style: TextStyle(
-                          fontSize: screenSize.width * 0.04,
-                          color: AppColors.white.withOpacity(0.8),
-                          letterSpacing: 0.5,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
+                SizedBox(height: screenSize.height * 0.01),
+                Icon(Icons.person_add, color: AppColors.primary, size: screenSize.width * 0.16),
+                SizedBox(height: screenSize.height * 0.01),
+                Text(
+                  'Create Account',
+                  style: TextStyle(
+                    fontSize: screenSize.width * 0.07,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.primary,
                   ),
+                  textAlign: TextAlign.center,
                 ),
                 
                 // Form Card
@@ -212,7 +171,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   width: double.infinity,
                   margin: EdgeInsets.symmetric(vertical: screenSize.height * 0.02),
                   decoration: BoxDecoration(
-                    color: AppColors.white,
+                    color: AppColors.surface,
                     borderRadius: BorderRadius.circular(UIConstants.radiusXL),
                     boxShadow: const [AppShadows.medium],
                   ),
@@ -234,7 +193,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   'Personal Information',
                                   style: TextStyle(
                                     fontSize: screenSize.width * 0.045,
-                                    fontWeight: FontWeight.w600,
+                                    fontWeight: FontWeight.w700,
                                     color: AppColors.textPrimary,
                                   ),
                                 ),
@@ -247,22 +206,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     controller: _firstNameController,
                                     style: TextStyle(fontSize: screenSize.width * 0.04),
                                     decoration: InputDecoration(
-                                      labelText: 'First Name',
-                                      prefixIcon: Icon(
-                                        Icons.person_outline,
-                                        color: AppColors.primary,
-                                        size: screenSize.width * 0.05,
-                                      ),
-                                      filled: true,
-                                      fillColor: AppColors.grey50,
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(UIConstants.radiusL),
-                                        borderSide: BorderSide.none,
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(UIConstants.radiusL),
-                                        borderSide: BorderSide(color: AppColors.primary, width: 2),
-                                      ),
+                                      hintText: 'First name',
+                                      prefixIcon: const Icon(Icons.person_outline),
                                     ),
                                     validator: (value) {
                                       if (value == null || value.trim().isEmpty) {
@@ -280,22 +225,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     controller: _lastNameController,
                                     style: TextStyle(fontSize: screenSize.width * 0.04),
                                     decoration: InputDecoration(
-                                      labelText: 'Last Name',
-                                      prefixIcon: Icon(
-                                        Icons.person_outline,
-                                        color: AppColors.primary,
-                                        size: screenSize.width * 0.05,
-                                      ),
-                                      filled: true,
-                                      fillColor: AppColors.grey50,
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(UIConstants.radiusL),
-                                        borderSide: BorderSide.none,
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(UIConstants.radiusL),
-                                        borderSide: BorderSide(color: AppColors.primary, width: 2),
-                                      ),
+                                      hintText: 'Last name',
+                                      prefixIcon: const Icon(Icons.person_outline),
                                     ),
                                     validator: (value) {
                                       if (value == null || value.trim().isEmpty) {
@@ -358,7 +289,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   'Contact Information',
                                   style: TextStyle(
                                     fontSize: screenSize.width * 0.045,
-                                    fontWeight: FontWeight.w600,
+                                    fontWeight: FontWeight.w700,
                                     color: AppColors.textPrimary,
                                   ),
                                 ),
@@ -379,7 +310,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   margin: EdgeInsets.only(bottom: screenSize.height * 0.015),
                                   child: EmailInput(
                                     label: 'Email',
-                                    hint: 'Enter your email address',
+                                    hint: 'Email address',
                                     controller: _emailController,
                                   ),
                                 ),
@@ -392,21 +323,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     maxLines: 3,
                                     style: TextStyle(fontSize: screenSize.width * 0.04),
                                     decoration: InputDecoration(
-                                      labelText: 'Address',
-                                      prefixIcon: Icon(
+                                      hintText: 'Address',
+                                      prefixIcon: const Icon(
                                         Icons.location_on_outlined,
-                                        color: AppColors.primary,
-                                        size: screenSize.width * 0.05,
-                                      ),
-                                      filled: true,
-                                      fillColor: AppColors.grey50,
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(UIConstants.radiusL),
-                                        borderSide: BorderSide.none,
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(UIConstants.radiusL),
-                                        borderSide: const BorderSide(color: AppColors.primary, width: 2),
                                       ),
                                       alignLabelWithHint: true,
                                     ),
@@ -432,7 +351,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   'Account Information',
                                   style: TextStyle(
                                     fontSize: screenSize.width * 0.045,
-                                    fontWeight: FontWeight.w600,
+                                    fontWeight: FontWeight.w700,
                                     color: AppColors.textPrimary,
                                   ),
                                 ),
@@ -445,21 +364,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     controller: _usernameController,
                                     style: TextStyle(fontSize: screenSize.width * 0.04),
                                     decoration: InputDecoration(
-                                      labelText: 'Username',
-                                      prefixIcon: Icon(
+                                      hintText: 'Username',
+                                      prefixIcon: const Icon(
                                         Icons.account_circle_outlined,
-                                        color: AppColors.primary,
-                                        size: screenSize.width * 0.05,
-                                      ),
-                                      filled: true,
-                                      fillColor: AppColors.grey50,
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(UIConstants.radiusL),
-                                        borderSide: BorderSide.none,
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(UIConstants.radiusL),
-                                        borderSide: const BorderSide(color: AppColors.primary, width: 2),
                                       ),
                                     ),
                                     validator: (value) {
@@ -486,20 +393,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ),
                           
                           // MongoDB Sign Up Button
-                          Container(
+                          SizedBox(
                             width: double.infinity,
                             height: screenSize.height * 0.065,
-                            margin: EdgeInsets.symmetric(vertical: screenSize.height * 0.01),
-                            decoration: BoxDecoration(
-                              gradient: AppGradients.primaryGradient,
-                              borderRadius: BorderRadius.circular(UIConstants.radiusL),
-                              boxShadow: const [AppShadows.soft],
-                            ),
                             child: ElevatedButton(
                               onPressed: _isLoading ? null : _handleMongoDBSignUp,
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.transparent,
-                                shadowColor: Colors.transparent,
+                                backgroundColor: AppColors.primary,
+                                foregroundColor: AppColors.white,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(UIConstants.radiusL),
                                 ),
@@ -514,10 +415,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                       ),
                                     )
                                   : Text(
-                                      'Create Account (MongoDB)',
+                                      'Create Account',
                                       style: TextStyle(
                                         fontSize: screenSize.width * 0.04,
-                                        fontWeight: FontWeight.w600,
+                                        fontWeight: FontWeight.w700,
                                         color: AppColors.white,
                                       ),
                                     ),
@@ -525,20 +426,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ),
 
                           // Firebase Sign Up Button
-                          Container(
+                          SizedBox(
                             width: double.infinity,
                             height: screenSize.height * 0.065,
-                            margin: EdgeInsets.symmetric(vertical: screenSize.height * 0.01),
-                            decoration: BoxDecoration(
-                              color: AppColors.secondary,
-                              borderRadius: BorderRadius.circular(UIConstants.radiusL),
-                              boxShadow: const [AppShadows.soft],
-                            ),
-                            child: ElevatedButton(
+                            child: OutlinedButton(
                               onPressed: _isLoading ? null : _handleFirebaseSignUp,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.transparent,
-                                shadowColor: Colors.transparent,
+                              style: OutlinedButton.styleFrom(
+                                side: BorderSide(color: AppColors.primaryDark, width: 1.5),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(UIConstants.radiusL),
                                 ),
@@ -549,15 +443,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                       width: 24,
                                       child: CircularProgressIndicator(
                                         strokeWidth: 3,
-                                        valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
+                                        valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
                                       ),
                                     )
                                   : Text(
-                                      'Create Account (Firebase)',
+                                      'Continue with Firebase',
                                       style: TextStyle(
                                         fontSize: screenSize.width * 0.04,
                                         fontWeight: FontWeight.w600,
-                                        color: AppColors.white,
+                                        color: AppColors.primaryDark,
                                       ),
                                     ),
                             ),
@@ -613,7 +507,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
           ),
         ),
-      ),
     );
   }
 }

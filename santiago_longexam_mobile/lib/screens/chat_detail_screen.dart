@@ -473,44 +473,56 @@ class _ChatDetailScreenState extends State<ChatDetailScreen>
         final currentUserId = snap.data!;
 
         return Scaffold(
-          backgroundColor: Colors.grey.shade50,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           appBar: AppBar(
             elevation: 0,
-            backgroundColor: Colors.white,
-            foregroundColor: Colors.black87,
+            backgroundColor: Theme.of(context).brightness == Brightness.dark
+                ? Colors.grey.shade900
+                : AppColors.primary,
+            leading: IconButton(
+              icon: Icon(
+                Icons.arrow_back,
+                color: Colors.white,
+              ),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
             centerTitle: false,
             title: Row(
               children: [
                 CircleAvatar(
                   radius: 20,
-                  backgroundColor: widget.tappedUser['source'] == 'Firebase'
-                      ? Colors.orange.shade100
-                      : Colors.blue.shade100,
-                  child: CustomText(
-                    text: _getDisplayName().isNotEmpty
+                  backgroundColor: Colors.white.withOpacity(0.2),
+                  child: Text(
+                    _getDisplayName().isNotEmpty
                         ? _getDisplayName().substring(0, 1).toUpperCase()
                         : '?',
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.bold,
-                    color: widget.tappedUser['source'] == 'Firebase'
-                        ? Colors.orange.shade700
-                        : Colors.blue.shade700,
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
                 SizedBox(width: 12.w),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      CustomText(
-                        text: _getDisplayName(),
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w600,
+                      Text(
+                        _getDisplayName(),
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
                       ),
-                      CustomText(
-                        text: widget.tappedUser['source'] ?? 'User',
-                        fontSize: 12.sp,
-                        color: Colors.grey.shade600,
+                      Text(
+                        widget.tappedUser['email'] ?? 'No email',
+                        style: TextStyle(
+                          fontSize: 11.sp,
+                          color: Colors.white.withOpacity(0.8),
+                        ),
                       ),
                     ],
                   ),

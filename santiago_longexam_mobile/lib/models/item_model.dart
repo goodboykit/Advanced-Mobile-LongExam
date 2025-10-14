@@ -30,8 +30,8 @@ class Item {
       qtyTotal: json['qtyTotal'] ?? 0,
       qtyAvailable: json['qtyAvailable'] ?? 0,
       isActive: json['isActive'] ?? true,
-      createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
-      updatedAt: json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
+      createdAt: ItemModel._parseDateTime(json['createdAt']),
+      updatedAt: ItemModel._parseDateTime(json['updatedAt']),
     );
   }
 
@@ -80,9 +80,51 @@ class ItemModel {
       qtyTotal: json['qtyTotal'],
       qtyAvailable: json['qtyAvailable'],
       isActive: json['isActive'] ?? true,
-      createdAt: json['createdAt'] != null ? DateTime.parse(json['createdAt']) : null,
-      updatedAt: json['updatedAt'] != null ? DateTime.parse(json['updatedAt']) : null,
+      createdAt: _parseDateTime(json['createdAt']),
+      updatedAt: _parseDateTime(json['updatedAt']),
     );
+  }
+
+  // Helper method to parse both String dates and Firebase Timestamps
+  static DateTime? _parseDateTime(dynamic value) {
+    if (value == null) return null;
+
+    // Handle String format (from MongoDB)
+    if (value is String) {
+      try {
+        return DateTime.parse(value);
+      } catch (e) {
+        return null;
+      }
+    }
+
+    // Handle Firebase Timestamp object (cloud_firestore package)
+    // Timestamp has toDate() method that returns DateTime
+    if (value.runtimeType.toString() == 'Timestamp') {
+      try {
+        // Use dynamic to call toDate() method
+        return (value as dynamic).toDate() as DateTime;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    // Handle Firebase Timestamp as Map (serialized format)
+    if (value is Map && value.containsKey('_seconds')) {
+      try {
+        final seconds = value['_seconds'] as int;
+        return DateTime.fromMillisecondsSinceEpoch(seconds * 1000);
+      } catch (e) {
+        return null;
+      }
+    }
+
+    // Handle DateTime object (already parsed)
+    if (value is DateTime) {
+      return value;
+    }
+
+    return null;
   }
 
   Map<String, dynamic> toJson() {
