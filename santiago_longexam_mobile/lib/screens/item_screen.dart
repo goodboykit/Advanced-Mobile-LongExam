@@ -97,13 +97,22 @@ class _ItemScreenState extends State<ItemScreen> {
                 if (res is ItemModel) {
                   // Firebase returns ItemModel directly
                   newItem = res.toItem();
+                  debugPrint('Created item from Firebase: ${newItem.uid}');
                 } else {
                   // MongoDB returns Map
                   final created = (res['item'] ?? res);
                   newItem = Item.fromJson(created);
+                  debugPrint('Created item from MongoDB: ${newItem.uid}');
                 }
 
-                setState(() => _items.insert(0, newItem));
+                // Check for duplicates before adding (safety check)
+                setState(() {
+                  // Remove any existing item with same ID (shouldn't happen but just in case)
+                  _items.removeWhere((item) => item.uid == newItem.uid);
+                  // Add new item at the beginning
+                  _items.insert(0, newItem);
+                  debugPrint('Total items after adding: ${_items.length}');
+                });
 
                 if (ctx.mounted) Navigator.of(ctx).pop();
                 if (mounted) {
@@ -472,6 +481,7 @@ class _ItemScreenState extends State<ItemScreen> {
                       final id = result['id'] as String;
                       setState(() {
                         _items.removeWhere((e) => e.uid == id);
+                        debugPrint('Item deleted: $id, Total items: ${_items.length}');
                       });
                     }
 
@@ -479,7 +489,12 @@ class _ItemScreenState extends State<ItemScreen> {
                     if (result is Item) {
                       setState(() {
                         final i = _items.indexWhere((e) => e.uid == result.uid);
-                        if (i != -1) _items[i] = result;
+                        if (i != -1) {
+                          _items[i] = result;
+                          debugPrint('Item updated at index $i: ${result.uid}');
+                        } else {
+                          debugPrint('Warning: Updated item not found in list: ${result.uid}');
+                        }
                       });
                     }
                   },
